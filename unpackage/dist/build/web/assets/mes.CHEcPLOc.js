@@ -1,0 +1,1 @@
+import{ak as a,r as e}from"./index-BGMMYpLj.js";const t=a("mes",(()=>{const a=e({FI:"首检",RI:"巡检",EI:"设备点检","4I":"4M点检",CI:"开班点检"}),t=e([]),r=e([]),s=e({inspect:"",inspectType:"",workOrder:""});return{tagName:a,ticketNumber:t,taskData:r,interfaceData:s,SET_ticketNumber:a=>{t.value=a},SET_taskData:a=>{r.value=a},SET_interfaceData:a=>{s.value={...s.value,...a}}}}));export{t as m};

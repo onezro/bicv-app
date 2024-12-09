@@ -1,0 +1,355 @@
+{
+	"easycom": {
+		// 注意一定要放在custom里，否则无效，https://ask.dcloud.net.cn/question/131175
+		"custom": {
+			"^u--(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
+			"^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
+			 "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+		}
+	},
+
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"app-plus": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/index",
+			"style": {
+				"navigationBarTitleText": "MES应用",
+				"app-plus": {
+					"titleNView": false
+				},
+				"navigationBarBackgroundColor": "rgba(0,0,0,0.3)",
+				"navigationBarTextStyle": "white" //状态栏字体颜色
+			}
+		},
+		{
+			"path": "pages/msg/index",
+			"style": {
+				"navigationBarTitleText": "消息中心"
+			}
+		},
+		{
+			"path": "pages/mine/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+				// "app-plus": {
+				// 	"titleNView": false
+				// }
+			}
+		},
+		{
+			"path": "pages/mes/index",
+			"style": {
+				"navigationBarTitleText": "MES应用",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/mes/firstInspection/index",
+			"style": {
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/mes/tickets/index",
+			"style": {
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/mes/ticketDetail/index",
+			"style": {
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/permanage/personnelDuty",
+			"style": {
+				"navigationBarTitleText": "人员上岗",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/material/unboxing",
+			"style": {
+				"navigationBarTitleText": "物料拆箱",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/material/laserFeeding",
+			"style": {
+				"navigationBarTitleText": "镭雕上料",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/permanage/turnBox",
+			"style": {
+				"navigationBarTitleText": "SMT半成品拆箱",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path" : "pages/permanage/screenUnbox",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏半成品拆箱"
+			}
+		},
+		{
+			"path" : "pages/permanage/screenPacka",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏半成品装箱"
+			}
+		},
+		{
+			"path" : "pages/permanage/turnoverBox/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "半成品装箱工位"
+			}
+		},
+		{
+			"path" : "pages/permanage/turnoverBox/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "周转箱操作"
+			}
+		},
+		// {
+		// 	"path" : "pages/permanage/semiFinish/index",
+		// 	"style" : 
+		// 	{
+		// 		"navigationBarTitleText" : "半成品入库工位"
+		// 	}
+		// },
+		{
+			"path" : "pages/permanage/semiFinish/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "SMT半成品入库"
+			}
+		},
+		// {
+		// 	"path" : "pages/permanage/burnFinish/index",
+		// 	"style" : 
+		// 	{
+		// 		"navigationBarTitleText" : "烧录半成品入库工位"
+		// 	}
+		// },
+		{
+			"path" : "pages/permanage/burnFinish/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "SMT烧录半成品入库"
+			}
+		},
+		{
+			"path" : "pages/fixture/shelves",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具入库"
+			}
+		},
+		{
+			"path" : "pages/fixture/issue/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具出库任务",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path" : "pages/fixture/issue/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具出库"
+			}
+		},
+		{
+			"path" : "pages/fixture/online/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具上线工位"
+			}
+		},
+		{
+			"path" : "pages/fixture/online/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具上线"
+			}
+		},
+		{
+			"path" : "pages/fixture/offline/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具下线工位"
+			}
+		},
+		{
+			"path" : "pages/fixture/offline/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工治具下线"
+			}
+		},
+		{
+			"path" : "pages/material/Feeding/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "上料工位"
+			}
+		},
+		{
+			"path" : "pages/material/Feeding/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "物料上料"
+			}
+		},
+		{
+			"path" : "pages/material/Lighting",
+			"style" : 
+			{
+				"navigationBarTitleText" : "首套亮灯"
+			}
+		},
+		{
+			"path" : "pages/material/Scaning/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "配置WEB API"
+			}
+		},
+		{
+			"path" : "pages/material/Scaning/mcid",
+			"style" : 
+			{
+				"navigationBarTitleText" : "资源ID配置"
+			}
+		},
+		{
+			"path" : "pages/material/Scaning/line",
+			"style" : 
+			{
+				"navigationBarTitleText" : "line"
+			}
+		},
+		{
+			"path" : "pages/permanage/aging/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工位选择"
+			}
+		},
+		{
+			"path" : "pages/permanage/aging/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装老化"
+			}
+		},
+		{
+			"path" : "pages/permanage/finishPack/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装成品装箱工位"
+			}
+		},
+		{
+			"path" : "pages/permanage/finishPack/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装成品装箱"
+			}
+		},
+		// {
+		// 	"path" : "pages/permanage/finishTurn/index",
+		// 	"style" : 
+		// 	{
+		// 		"navigationBarTitleText" : "组装成品拆箱"
+		// 	}
+		// },
+		{
+			"path" : "pages/permanage/finishTurn/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装成品拆箱"
+			}
+		},
+		// {
+		// 	"path" : "pages/permanage/finishSamp/index",
+		// 	"style" : 
+		// 	{
+		// 		"navigationBarTitleText" : "组装成品抽检工位"
+		// 	}
+		// },
+		{
+			"path" : "pages/permanage/finishSamp/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装成品送检"
+			}
+		},
+		{
+			"path" : "pages/permanage/screenPack/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏车间包装工位"
+			}
+		},
+		{
+			"path" : "pages/permanage/screenPack/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏车间包装"
+			}
+		},
+		{
+			"path" : "pages/permanage/srcSemiFinish/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏半成品入库"
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#000000",
+		"selectedColor": "#1e92ff",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/index",
+			"iconPath": "static/images/tabbar/home.png",
+			"selectedIconPath": "static/images/tabbar/home_.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/msg/index",
+			"iconPath": "static/images/tabbar/msg1_.png",
+			"selectedIconPath": "static/images/tabbar/msg2_.png",
+			"text": "消息"
+		}, {
+			"pagePath": "pages/mine/index",
+			"iconPath": "static/images/tabbar/mine.png",
+			"selectedIconPath": "static/images/tabbar/mine_.png",
+			"text": "我的"
+		}]
+	},
+	"globalStyle": {
+		"pageOrientation": "auto",
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "SIEMENS",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}

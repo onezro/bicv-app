@@ -1,0 +1,141 @@
+.content_container{
+	background-color: #f7f7f7;
+	width: 100vw;
+	min-height: 100vh;
+	padding-bottom: 130rpx;
+}
+/*uni-forms定制*/
+.uni-forms{
+	background: #fff;
+	padding: 0.1px;
+}
+.uni-forms-item{
+	box-sizing: border-box;
+	margin: 20rpx 32rpx;
+	padding-bottom: 20rpx;
+	font-size: 32rpx!important;
+	margin-bottom: 0px!important;
+	border-bottom: solid 2rpx #f7f7f7;
+	align-items: center;
+}
+.uni-forms-item:last-child {
+	border-bottom: solid 0rpx #f7f7f7;
+}
+.uni-forms-item__label{
+	width: 260rpx!important;
+	font-size: 32rpx!important;
+	color:#333!important;
+	// height: 50rpx!important;
+}
+.uni-easyinput__content-input{
+	text-align: right;
+	color: #333!important;
+	font-size: 32rpx!important;
+}
+.uni-numbox__value{
+	color: #333!important;
+	font-size: 32rpx!important;
+}
+.uni-numbox--text{
+	margin-bottom: 6rpx;
+}
+.uni-easyinput__placeholder-class{
+	font-size: 32rpx!important;
+	color:#999!important;
+}
+.uni-forms-item__content{
+	justify-content: flex-end;
+	display: flex;
+}
+.uni-data-checklist .checklist-group {
+	// height: 35px;
+	
+	.checklist-box{
+		  margin-right: 25rpx!important;
+		  padding-left: 20px;
+		  flex: 1;
+	}
+}
+.uni-data-checklist .checklist-group .checklist-box:last-child {
+	// margin-right: 10rpx!important;
+}
+.checklist-text{
+	font-size: 32rpx!important;
+}
+.uni-forms-item__error {
+    position: absolute;
+    top: 80%!important;
+    right: 0!important;
+	left: unset!important;
+}
+.uni-select{
+	border: 0 !important;
+}
+.uni-select__input-text{
+	color: #333;
+	font-size: 32rpx;
+	width: calc(100% - 28rpx) !important;
+}
+.uni-select__input-placeholder{
+	font-size: 28rpx!important;
+	color:#999!important;
+}
+//多选样式
+.customer_multi_select_input{
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: 35px;
+	.customer_multi_select_icon{
+		// padding: 0 10rpx;
+		text{
+			font-size: 32rpx!important;
+		}
+	}
+	.customer_multi_select_placeholder{
+		font-size: 28rpx!important;
+		color:#999!important;
+	}
+	.customer_multi_select_content{
+		color: #333;
+		font-size: 32rpx!important;
+	}
+}
+.uni-btn-v{
+	background-color: #fff;
+	position: fixed;
+	z-index: 99;
+	bottom: 0rpx;
+	left: 0rpx;
+	width: 100vw;
+	clear: both;
+	text-align: center;
+	padding: 20rpx 0rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	button{
+		color: #fff;
+		background: #007aff;
+		font-size: 36rpx;
+		// padding: 5rpx;
+		width: 60%;
+		border-radius: 50rpx;
+	}
+}
+.van-doc-demo-block__title {
+	margin: 0;
+	padding: 40rpx 32rpx 32rpx;
+	color: rgba(69, 90, 100, 0.6);
+	font-weight: normal;
+	font-size: 32rpx;
+	line-height: 32rpx;
+	background-color: #f8f8f8;
+}
+.v__value{
+	font-size: 32rpx;
+	color:#007aff;
+	flex: 1;
+	text-align: right;
+}
