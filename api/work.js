@@ -26,7 +26,40 @@ export function ToolsMove(data){
 		data
 	})
 }
-
+//查询治具
+export function QueryTmpToolData(data){
+	return request({
+		url:`/api/Tools/QueryTmpToolData?ToolsTaskDetailGuid=${data}`,
+		method:'POST',
+	})
+}
+//删除治具
+export function DeleteTmpToolData(data){
+	return request({
+		url:`/api/Tools/DeleteTmpToolData?compid=${data}`,
+		method:'POST',
+	})
+}
+//一键出库
+export function ToolsMoveOutOnce(data){
+	return request({
+		url:`/api/Tools/ToolsMoveOutOnce`,
+		method:'POST',
+		data
+	})
+}
+export function CancelToolTaskDetail(data){
+	return request({
+		url:`/api/Tools/CancelToolTaskDetail?ToolsTaskGuid=${data.ToolsTaskGuid}&ToolsTaskDetailGuid=${data.ToolsTaskDetailGuid}`,
+		method:'POST',
+	})
+}
+export function FinishToolTaskDetail(data){
+	return request({
+		url:`/api/Tools/FinishToolTaskDetail?ToolsTaskGuid=${data.ToolsTaskGuid}&ToolsTaskDetailGuid=${data.ToolsTaskDetailGuid}`,
+		method:'POST',
+	})
+}
 //
 export function ValidateComId(data){
 	return request({
