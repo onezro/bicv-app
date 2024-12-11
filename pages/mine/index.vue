@@ -29,9 +29,17 @@
 					<view class="item" style="font-size: 28rpx;color: #a2a2a2;">
 						<text>版本号</text>
 						<text>{{version_number}}</text>
-						<text style="padding: 5px;font-size: 28rpx;color:red" v-if="isNewVersion" @click="handleToUpgrade">更新</text>
+						<text style="padding: 5px;font-size: 28rpx;color:red" v-if="isNewVersion"
+							@click="handleToUpgrade">更新</text>
 						<uni-icons type="right" color="#c8c8c8" size="16"></uni-icons>
 					</view>
+				</view>
+				<view class="about" @click="clearApp">
+					<view class="item">
+						<image class="img" src="../../static/svg/clear.svg" mode=""></image>
+						<text>清除安装包缓存</text>
+					</view>
+					<uni-icons type="right" color="#c8c8c8" size="16"></uni-icons>
 				</view>
 
 			</view>
@@ -41,13 +49,16 @@
 			:title="'发现新版本'+newVerMess.CurrentVer">
 			<view class="slot-content" style="color: red;font-size: 30rpx;">
 				<text>{{newVerMess.UpdateLog}}</text>
-				
+
 			</view>
 		</up-modal>
-		<uni-popup ref="inputDialog" type="dialog"> 
+		<uni-popup ref="inputDialog" type="dialog">
 			<uni-popup-dialog ref="inputClose" mode="input" title="下载进度" value="对话框预置提示内容!" placeholder="请输入内容"
 				@confirm="dialogInputConfirm">
-				<view class=""><progress :percent="percent" activeColor="#10AEFF" show-info stroke-width="3" /></view>
+				<view class="">
+					<wd-progress :percentage="percent" />
+					<!-- <progress :percent="percent" activeColor="#10AEFF" show-info stroke-width="3" /> -->
+					</view>
 			</uni-popup-dialog>
 		</uni-popup>
 	</view>
@@ -69,8 +80,12 @@
 	import {
 		storeToRefs
 	} from 'pinia'
-	import {compare} from "@/utils/compareVers.js"
-	import {GetPDAVersion} from "@/api/login.js"
+	import {
+		compare
+	} from "@/utils/compareVers.js"
+	import {
+		GetPDAVersion
+	} from "@/api/login.js"
 	const userStore = useUserStore()
 	const {
 		name
@@ -78,13 +93,13 @@
 	const version_number = ref('')
 	const inputDialog = ref()
 	const showModal = ref(false)
-	const percent=ref(0)
-	const savedFilePath=ref('')
-	const isNewVersion=ref(false)
-	const newVerMess=ref({
-		 CurrentVer: "",
-		    UpdateLog: "",
-		    UpdateUrl: ""
+	const percent = ref(0)
+	const savedFilePath = ref('')
+	const isNewVersion = ref(false)
+	const newVerMess = ref({
+		CurrentVer: "",
+		UpdateLog: "",
+		UpdateUrl: ""
 	})
 	const logOut = () => {
 		userStore.LOGOUT()
@@ -96,20 +111,22 @@
 		const systemInfo = uni.getSystemInfoSync();
 		version_number.value = systemInfo.appWgtVersion
 		getVersion()
-	
+
 	})
-	onShow(()=>{
+	onShow(() => {
 		getVersion()
-		
+
 	})
-	const getVersion=()=>{
-		GetPDAVersion().then(res=>{
-			if(compare(res.content.CurrentVer,version_number.value )){
-				isNewVersion.value=true
-				newVerMess.value={...res.content}
+	const getVersion = () => {
+		GetPDAVersion().then(res => {
+			if (compare(res.content.CurrentVer, version_number.value)) {
+				isNewVersion.value = true
+				newVerMess.value = {
+					...res.content
+				}
 				// console.log(newVerMess.value);
-			}else{
-				isNewVersion.value=false
+			} else {
+				isNewVersion.value = false
 			}
 		})
 	}
@@ -139,16 +156,16 @@
 	const cancel = () => {
 		showModal.value = false
 	}
-	const dialogInputConfirm=()=>{
-			inputDialog.value.close()
-			uni.openDocument({
-				filePath: savedFilePath.value,
-				success: function(res) {
-					// console.log('打开文档成功');
-				}
-			});
+	const dialogInputConfirm = () => {
+		inputDialog.value.close()
+		uni.openDocument({
+			filePath: savedFilePath.value,
+			success: function(res) {
+				// console.log('打开文档成功');
+			}
+		});
 	}
-	const Download=()=> {
+	const Download = () => {
 		const downloadTask = uni.downloadFile({
 			url: newVerMess.value.UpdateUrl, //下载地址接口返回
 			success: (data) => {
@@ -163,7 +180,7 @@
 								title: '文件已保存：' + res.savedFilePath, //保存路径
 								duration: 3000,
 							});
-							savedFilePath.value=res.savedFilePath
+							savedFilePath.value = res.savedFilePath
 							setTimeout(() => {
 								//打开文档查看
 								uni.openDocument({
@@ -191,7 +208,43 @@
 			percent.value = res.progress
 		})
 	}
-	
+	const delFile = (filePath) => {
+
+		//获取文件对象
+		plus.io.resolveLocalFileSystemURL(filePath, function(entry) {
+
+			//删除文件
+			entry.removeRecursively(success => {
+				// console.log(success)
+				uni.showToast({
+					title: '清除成功',
+					icon: 'success',
+				})
+			}, err => {
+				uni.showToast({
+					title: '清除失败',
+					icon: 'error',
+				})
+				console.log(err)
+			});
+
+		}, function(e) {
+			console.log('可能没有目录', e)
+		})
+	}
+	const clearApp=()=>{
+		uni.showModal({
+			title: '提示',
+			content: `是否清除apk`,
+			success: (res) => {
+				if (res.confirm) {
+				delFile('_doc/uniapp_save')
+				} else if (res.cancel) {
+		
+				}
+			}
+		});
+	}
 </script>
 
 <style lang="scss">
@@ -229,7 +282,7 @@
 					// align-items: center;
 					font-size: 1.3rem;
 					color: #fff;
-				
+
 
 					.role {
 						font-size: 0.9rem;
@@ -270,7 +323,7 @@
 							margin-right: 20rpx;
 							width: 24px;
 							height: 24px;
-							
+
 						}
 					}
 				}

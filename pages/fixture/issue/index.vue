@@ -15,7 +15,7 @@
 		</view>
 		<view class="listview">
 			<uni-card margin="10px" padding="5px" spacing='0px' v-for="o in orderList1" :key="o.TaskNo+o.Item"
-				@click="onClick(o)">
+				@click.self="onClick(o)">
 				<up-form :model="o" :borderBottom='true' labelAlign='right' labelWidth="60">
 					<wd-row gutter="5">
 						<wd-col :span="16">
@@ -64,7 +64,7 @@
 						</wd-col>
 						<wd-col :span="8">
 							<up-form-item label="出库数" :borderBottom='true' class='test'>
-								<text class="header-text">{{o.IssuedQuantity}}</text>
+								<text class="header-text">{{o.qty}}</text>
 							</up-form-item>
 						</wd-col>
 						<wd-col :span="8">
@@ -73,23 +73,34 @@
 							</up-form-item>
 						</wd-col>
 					</wd-row>
-					<view class="" style="width: 100%;display: flex;align-items:center;padding-top: 5px;">
-						<up-button type="info" size="small" text="取消任务" class="custom-style"
-							@click="submitList"></up-button>
-						<up-button type="success" size="small" text="完成任务" class="custom-style"
-							@click="submitList"></up-button>
-					</view>
-				</up-form>
 
+				</up-form>
+				<view class=""
+					style="width: 100%;display: flex;align-items:center;padding-top: 5px;justify-content: space-between;">
+					<!-- <label @click.stop="submitCancel(o)"> 
+					<up-button type="info" size="small" text="取消任务" class="custom-style" :disabled="o.stockQty!==0"
+						></up-button></label> -->
+					<!-- 	<up-button type="success" size="small" text="完成任务" class="custom-style" :disabled="o.qty==0"
+						@click.stop="submitFinish(o)"></up-button> -->
+					<view class="" @click.stop="submitCancel(o)"> <wd-button type="info" size="small"
+							:disabled="o.qty!=0">取消任务</wd-button></view>
+					<view class="" @click.stop="submitFinish(o)"> <wd-button type="primary" size="small"
+							:disabled="o.qty==0">完成任务</wd-button></view>
+					<!-- 	<button type="default" class="custom-style" size="mini" @click.stop="submitCancel(o)">取消任务</button>
+						<button type="primary" class="custom-style" size="mini" @click.stop="submitFinish(o)">完成任务</button> -->
+				</view>
 			</uni-card>
 		</view>
+		<wd-message-box />
 		<uni-load-more :status="status"></uni-load-more>
 	</view>
 </template>
 
 <script setup>
 	import {
-		GetToolsOrderTask
+		GetToolsOrderTask,
+		CancelToolTaskDetail,
+		FinishToolTaskDetail
 	} from '@/api/work.js'
 
 	import {
@@ -106,6 +117,15 @@
 	import {
 		debounce
 	} from "@/utils/de.js"
+	import {
+		audioSuccessPlay,
+		audiofailPlay
+	} from "@/utils/prompt.js"
+	import {
+		useMessage
+	} from '@/uni_modules/wot-design-uni'
+	const message = useMessage()
+
 	const searchValue = ref('')
 	const orderList = ref([])
 	const orderList1 = ref([])
@@ -207,27 +227,130 @@
 		// orderList1.value = orderList.value.filter(task =>
 		// 	task.TaskNo.toString().includes(searchValue.value.toString())
 		// );
-
 		orderList1.value = orderList.value.filter(task =>
 			task.TaskNo == searchValue.value
 		);
-		console.log(orderList1.value);
+		// console.log(orderList1.value);
 		status.value = 'noMore';
+	}
+	const submitCancel = (data) => {
+		if (data.qty == 0) {
+			message
+				.confirm({
+					msg: `是否取消${data.ProcedureDsc+'-'+data.TaskNo}任务单`,
+					title: '提示'
+				})
+				.then(() => {
+					CancelToolTaskDetail({
+						ToolsTaskGuid: data.ToolsTaskGuid,
+						ToolsTaskDetailGuid: data.ToolsTaskDetailGuid
+					}).then(res => {
+						audioSuccessPlay()
+						uni.showToast({
+							title: res.msg,
+							icon: 'none',
+						})
+						getData()
+					}).catch(() => {
+						audiofailPlay()
+					})
+				})
+				.catch(() => {
+					console.log('点击了取消按钮')
+				})
+			// uni.showModal({
+			// 	title: '提示',
+			// 	content: `是否取消${data.ProcedureDsc+'-'+data.TaskNo}任务单`,
+			// 	success: (res) => {
+			// 		if (res.confirm) {
+			// 			// console.log('用户点击确定');
+			// 			CancelToolTaskDetail({
+			// 				ToolsTaskGuid: data.ToolsTaskGuid,
+			// 				ToolsTaskDetailGuid: data.ToolsTaskDetailGuid
+			// 			}).then(res => {
+			// 				audioSuccessPlay()
+			// 				uni.showToast({
+			// 					title: res.msg,
+			// 					icon: 'none',
+			// 				})
+			// 				getData()
+			// 			}).catch(() => {
+			// 				audiofailPlay()
+			// 			})
+			// 		} else if (res.cancel) {
+
+			// 		}
+			// 	}
+			// });
+		}
+
+
+	}
+	const submitFinish = (data) => {
+		if (data.qty !== 0) {
+			message
+				.confirm({
+					msg:`是否完成${data.ProcedureDsc+'-'+data.TaskNo}任务单` ,
+					title: '提示'
+				})
+				.then(() => {
+					FinishToolTaskDetail({
+						ToolsTaskGuid: data.ToolsTaskGuid,
+						ToolsTaskDetailGuid: data.ToolsTaskDetailGuid
+					}).then(res => {
+						audioSuccessPlay()
+						uni.showToast({
+							title: res.msg,
+							icon: 'none',
+						})
+						getData()
+					}).catch(() => {
+						audiofailPlay()
+					})
+				})
+				.catch(() => {
+					console.log('点击了取消按钮')
+				})
+			// uni.showModal({
+			// 	title: '提示',
+			// 	content: `是否完成${data.ProcedureDsc+'-'+data.TaskNo}任务单`,
+			// 	success: (res) => {
+			// 		if (res.confirm) {
+			// 			// console.log('用户点击确定');
+			// 			// console.log(data);
+			// 			FinishToolTaskDetail({
+			// 				ToolsTaskGuid: data.ToolsTaskGuid,
+			// 				ToolsTaskDetailGuid: data.ToolsTaskDetailGuid
+			// 			}).then(res => {
+			// 				audioSuccessPlay()
+			// 				uni.showToast({
+			// 					title: res.msg,
+			// 					icon: 'none',
+			// 				})
+			// 				getData()
+			// 			}).catch(() => {
+			// 				audiofailPlay()
+			// 			})
+			// 		} else if (res.cancel) {
+
+			// 		}
+			// 	}
+			// });
+		}
 
 	}
 
-
 	const onClick = (val) => {
+		// if (val.stockQty == 0) {
+		// 	uni.showToast({
+		// 		title: '库存为0，不可出库！！',
+		// 		icon: 'none',
+		// 	})
+		// 	return
+		// }
 
-		if (val.stockQty == 0) {
-			uni.showToast({
-				title: '库存为0，不可出库！！',
-				icon: 'none',
-			})
-			return
-		}
 		uni.navigateTo({
-			url: `/pages/fixture/issue/edit?compName=${val.CompName}&toolsTaskDetailGuid=${val.ToolsTaskDetailGuid}&orderNumber=${val.OrderNumber}&taskNo=${val.TaskNo}&amount=${val.Amount}&IssuedQuantity=${val.IssuedQuantity}`
+			url: `/pages/fixture/issue/edit?compName=${val.CompName}&toolsTaskDetailGuid=${val.ToolsTaskDetailGuid}&orderNumber=${val.OrderNumber}&taskNo=${val.TaskNo}&amount=${val.Amount}&IssuedQuantity=${val.qty}`
 		})
 	}
 </script>
@@ -291,6 +414,7 @@
 		.custom-style {
 			width: 60px;
 			height: 25px;
+			font-size: 13px;
 		}
 	}
 </style>

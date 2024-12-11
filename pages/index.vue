@@ -5,7 +5,7 @@
 		</view>
 		
 			<uni-section v-for="(m,i) in  permissions" :key="m.id" :title="m.title" type="line" titleFontSize='18px'>
-				<uni-grid :column="4" :show-border="false" @change="goToFist1($event,m.title,m.childMenu)">
+				<uni-grid  :column="4" :show-border="false" @change="goToFist1($event,m.title,m.childMenu)">
 					<uni-grid-item v-for="(c,index) in m.childMenu" :index="index" :key="index">
 						<view class="box">
 							<image class="img" :src="c.MenuName" mode=""></image>

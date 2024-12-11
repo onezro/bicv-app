@@ -42,35 +42,52 @@
 			</scroll-view>
 			<template v-slot:right>
 				<view class="" style="display: flex;align-items:center;">
-					<view class=""  style="padding-right:15px;">
+					<view class="" style="padding-right:15px;">
 						需求：<text style="color: red;font-weight: bold;">{{Amount}}</text>
 					</view>
-					<view class="" style="padding-right:30px;">
-						已出库：<text style="color: seagreen;font-weight: bold;">{{outNum}}</text>
+					<view class="" style="padding-right:15px;">
+						<wd-button  @click.stop="showList" type="info" size="small" :disabled="toolsList.length==0" >已出库：<text style="color: seagreen;font-weight: bold;">{{toolsList.length}}</text></wd-button>
 					</view>
-					<up-button type="primary"  text="一键出库"
-						class="custom-style" @click="submitList"></up-button>
+					<wd-button type="primary" size="small" @click="submitList"
+						:disabled="list.length==0">一键出库</wd-button>
+					<!-- <up-button type="primary" text="一键出库" class="custom-style" @click="submitList"
+						:disabled="list.length==0"></up-button> -->
 				</view>
 			</template>
-			<!-- <view class="button-box">
-				<view class="" style="width: 100%;display: flex;justify-content: space-between;">
-					<up-button type="success"  text="完成任务"
-						class="custom-style" @click="submitList"></up-button>
-					<up-button type="info"  text="取消任务"
-						class="custom-style" @click="submitList"></up-button>
-					<up-button type="primary"  text="一键出库" 
-						class="custom-style" @click="submitList"></up-button>
-				</view>
-				
-			</view> -->
 		</uni-section>
+		<up-popup :show="showTool" mode="bottom" safeAreaInsetBottom closeable @close="close" @open="open">
+			<view class="" style="height: 70vh;">
+				<view class="title" style="width: 90vw;position: sticky;left: 0;top: 0;">
+					<uni-list :border="false">
+						<uni-list-item :border="false" :title="'计划单号：'+formData.orderNumber"
+							:note="'治具型号：'+formData.compName" :rightText="'已出库：'+toolsList.length" />
+					</uni-list>
+
+				</view>
+				<scroll-view  scroll-y="true" style="height:100%;padding-bottom: 120px;">
+					<uni-list>
+						<uni-swipe-action>
+							<uni-swipe-action-item v-for="(f,i) in  toolsList" :key="f.CompID"
+								:right-options="rightOptions" @click="swipeClick($event, f.CompID)"
+								:disabled='f.Qty==0'>
+								<uni-list-item :title="'治具编码：'+f.CompID" :note="'型号：'+f.CompName"
+									:rightText="'序号：'+(i+1)" />
+							</uni-swipe-action-item>
+						</uni-swipe-action>
+					</uni-list>
+				</scroll-view>
+			</view>
+		</up-popup>
 	</view>
 </template>
 
 <script setup>
 	import {
 		ToolsMove,
-		QueryTools
+		QueryTools,
+		QueryTmpToolData,
+		DeleteTmpToolData,
+		ToolsMoveOutOnce
 	} from '@/api/work.js'
 	import {
 		audioSuccessPlay,
@@ -84,6 +101,7 @@
 		onLoad,
 		onReady
 	} from "@dcloudio/uni-app"
+
 
 	const orderNo = ref('')
 	const IsKitting = ref(false)
@@ -107,6 +125,15 @@
 	const secthe = ref(0)
 	const Amount = ref(0)
 	const outNum = ref(0)
+	const showTool = ref(false)
+	const toolsList = ref([])
+	const rightOptions = ref([{
+		text: '删除',
+		style: {
+			backgroundColor: '#F56C6C'
+		}
+	}])
+	const toolID = ref("")
 	onLoad(options => {
 		formData.value.orderNumber = options.orderNumber
 		formData.value.compName = options.compName
@@ -114,13 +141,12 @@
 		getToolForm.value.CompName = options.compName
 		Amount.value = options.amount
 		outNum.value = options.IssuedQuantity
-
+		toolID.value = options.toolsTaskDetailGuid
+	
 		// getToolForm.value.OrderNumber=options.orderNumber
 	})
 	onReady(() => {
-		// uni.createSelectorQuery().select('.sect').boundingClientRect(data => {
-		// 	secthe.value = ((data.height) - 45) + 'px'
-		// }).exec()
+	
 		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
 			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
 		}).exec()
@@ -128,11 +154,18 @@
 	})
 	onMounted(() => {
 		getToolList()
+		getTempTool()
 	})
 	const getToolList = () => {
 		// console.log(getToolForm.value);
 		QueryTools(getToolForm.value).then(res => {
 			list.value = res.content
+			// console.log(list.value );
+		})
+	}
+	const getTempTool = () => {
+		QueryTmpToolData(toolID.value).then(res => {
+			toolsList.value = res.content
 		})
 	}
 	const getFocus = () => {
@@ -145,21 +178,23 @@
 		uni.hideKeyboard()
 	}
 	const submitQRCode = () => {
-		if (outNum.value < Amount.value) {
+		if (toolsList.value.length < Amount.value) {
 			ToolsMove(formData.value).then(res => {
 				audioSuccessPlay()
 				getToolList()
+				getTempTool()
 				uni.showToast({
 					title: res.msg,
 					icon: 'none',
 				})
-				outNum.value++
+				// outNum.value++
 			}).catch(() => {
 				audiofailPlay()
 			})
 		} else {
+			audiofailPlay()
 			uni.showToast({
-				title: `治具任务已出库完成`,
+				title: `出库达到需求`,
 				icon: 'error',
 			})
 		}
@@ -176,6 +211,66 @@
 				submitQRCode()
 			}
 		});
+	}
+	const submitList = () => {
+		let data = []
+		// console.log(list.value);
+		if (toolsList.value.length < Amount.value) {
+			list.value.forEach((l, i) => {
+				// console.log(toolsList.value.length);
+				if (i + 1 <= Amount.value - toolsList.value.length) {
+					data.push({
+						compid: l.CompID,
+						location: l.Loc,
+						orderNumber: formData.value.orderNumber,
+						compName: l.CompName,
+						ToolsTaskDetailGuid: toolID.value,
+						toolType: l.MaterialName
+					})
+				}
+
+			})
+			// console.log(data);
+			ToolsMoveOutOnce(data).then(res => {
+				audioSuccessPlay()
+				getTempTool()
+				getToolList()
+				uni.showToast({
+					title: res.msg,
+					icon: 'none',
+				})
+			}).catch(() => {
+				audiofailPlay()
+			})
+		} else {
+			audiofailPlay()
+			uni.showToast({
+				title: `出库达到需求`,
+				icon: 'error',
+			})
+		}
+
+	}
+	const showList = () => {
+		// getTempTool()
+		showTool.value = true
+	}
+	const close = () => {
+		showTool.value = false
+	}
+
+	const swipeClick = (e, compid) => {
+		DeleteTmpToolData(compid).then(res => {
+			audioSuccessPlay()
+			getTempTool()
+			getToolList()
+			uni.showToast({
+				title: res.msg,
+				icon: 'none',
+			})
+		}).catch(() => {
+			audiofailPlay()
+		})
 	}
 </script>
 
@@ -200,10 +295,12 @@
 			overflow: auto;
 			background-color: #ffffff;
 		}
+
 		.custom-style {
 			width: 80px;
 			height: 28px;
 		}
+
 		.button-box {
 			position: fixed;
 			left: 0;
@@ -213,11 +310,11 @@
 			justify-content: center;
 			width: 100vw;
 			background-color: #fff;
-		
-		.custom-style {
-			width: 80px;
-			height: 28px;
-		}
+
+			.custom-style {
+				width: 80px;
+				height: 28px;
+			}
 		}
 	}
 </style>
@@ -230,6 +327,4 @@
 		padding: 5px 0;
 		font-size: 12px;
 	}
-
-
 </style>

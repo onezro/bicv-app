@@ -1,21 +1,21 @@
 <template>
 	<view class="content">
-		<uni-section title="拆箱" type="line">
+		<uni-section title="拆箱" type="line" class="sect1">
 			<view class="box">
 				<up-form labelPosition="left" :model="formData" ref="formRef" labelWidth="100">
-					<up-form-item label="类型" prop="type">
+					<up-form-item label="类型" prop="type" class='test'>
 						<uni-data-checkbox v-model="formData.type" :localdata="localdata" />
 					</up-form-item>
-					<up-form-item label="扫描条码" prop="barCode">
+					<up-form-item label="扫描条码" prop="barCode" class='test'>
 						<up-input placeholder="请扫描条码" @focus="focus" :focus="barCodeFocus" v-model="formData.barCode"
-							@confirm="submit">
+							@confirm="submit" style="height: 30px;" fontSize='13px'>
 							<template #suffix>
-								<uni-icons type="scan" color="#bdbdbd" @click="iconBarQRCode" size="24"></uni-icons>
+								<uni-icons type="scan" color="#bdbdbd" @click="iconBarQRCode" size="20"></uni-icons>
 							</template>
 						</up-input>
 					</up-form-item>
-					<up-form-item label="周转箱条码" prop="turnNumber">
-						<up-input v-model="formData.turnNumber" :disabled="true">
+					<up-form-item label="周转箱条码" prop="turnNumber" class='test'>
+						<up-input v-model="formData.turnNumber" :disabled="true" style="height: 30px;" fontSize='13px'>
 						</up-input>
 
 					</up-form-item>
@@ -23,34 +23,26 @@
 			</view>
 		</uni-section>
 		<uni-section title="装箱明细" type="line">
-			<view class="box">
-				<up-form labelPosition="left" :model="material" ref="materRef" labelWidth="80">
-					<up-form-item label="工单号" prop="orderNum">
-						<view class="textlog">{{material.OrderNumber}}</view>
-						<!-- <up-input v-model="material.OrderNumber"  border="none"></up-input> -->
-					</up-form-item>
-					<up-form-item label="物料编码" prop="itemNumber">
-						<text class="textlog">{{material.ProductName}}</text>
-					</up-form-item>
-					<up-form-item label="物料名称" prop="itemName">
-						<text>{{material.ProductDescription}}</text>
-					</up-form-item>
-					<up-form-item label="大板数量" prop="boxNumber">
-						<text class="textlog">{{material.PanelQty}}</text>
-					</up-form-item>
-					<up-form-item label="小板数量" prop="boxNumber">
-						<text class="textlog">{{material.PcbQty}}</text>
-					</up-form-item>
-				</up-form>
-			</view>
+			<scroll-view scroll-y="true" :style="{height:secthe}">
+				<uni-list :border="true">
+					<uni-list-item v-for="item in list" :title="'成品条码：'+item.ContainerName" :note="'产品编号：'+item.ProductName+'\n产品描述：'+item.ProductDesc"
+						:rightText="'计划单号：'+item.MfgOrderName"></uni-list-item>
+				</uni-list>
+			
+			</scroll-view>
 			<template v-slot:right>
-				<up-button class="custom-style" text="重置" @click="resetForm"></up-button>
+				<view class="" style="display: flex;align-items: center;">
+				<view class="" style="padding-right: 15px;">	<wd-button  type="info" size="small" @click="resetForm"
+				>重置</wd-button></view>
+			
+				<wd-button type="primary" size="small" @click="oneClick"
+					v-if="isUnbox" :disabled="isOneClick">一键拆箱</wd-button></view>
 			</template>
 		</uni-section>
-		<view class="subox">
-			<!-- <up-button text="重置" @click="resetForm"></up-button> -->
+		<!-- <view class="subox">
+			<up-button text="重置" @click="resetForm"></up-button>
 			<up-button type="primary" text="一键拆箱" @click="oneClick" v-if="isUnbox" :disabled="isOneClick"></up-button>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -69,6 +61,10 @@
 		watch,
 		nextTick
 	} from 'vue'
+	import {
+		onLoad,
+		onReady
+	} from "@dcloudio/uni-app"
 	import useUserStore from '@/stores/user.js'
 	import {
 		storeToRefs
@@ -102,16 +98,19 @@
 		Column1: ''
 	})
 	const restMaterial = () => {
-		material.value.OrderNumber = ''
-		material.value.ProductName = ''
-		material.value.ProductDescription = ''
-		material.value.PanelQty = ''
-		material.value.PcbQty = ''
+		// material.value.OrderNumber = ''
+		// material.value.ProductName = ''
+		// material.value.ProductDescription = ''
+		// material.value.PanelQty = ''
+		// material.value.PcbQty = ''
+		list.value=[]
 		formData.value.turnNumber = ''
 		formData.value.barCode = ''
 	}
 	const barCodeFocus = ref(true)
 	const isOneClick = ref(true)
+		const secthe = ref(0)
+	const list=ref([])
 	watch(() => formData.value.type, (newValue, oldValue) => {
 		isUnbox.value = newValue === 0 ? false : true
 		if (newValue !== oldValue) {
@@ -120,6 +119,13 @@
 			restMaterial()
 		}
 
+	})
+	onReady(() => {
+	
+		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
+			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
+		}).exec()
+	
 	})
 	const getFocus = () => {
 		barCodeFocus.value = false
@@ -154,12 +160,18 @@
 					userAccount: name.value,
 				}
 				SplitFinishedSNToPacking(data).then(res => {
-					// console.log(res.msg);
+				
 					audioSuccessPlay()
-					getInfoData(formData.value.turnNumber)
+					if(list.value.length==1){
+						list.value=[]
+						// formData.value.turnNumber=""
+					}else{
+						getInfoData(formData.value.turnNumber)
+					}
+					
 					uni.showToast({
 						title: res.msg,
-						icon: 'success',
+						icon: 'none',
 						duration: 2500
 					})
 				}).catch((error) => {
@@ -181,9 +193,11 @@
 	const getInfoData = (val) => {
 		QueryPackingInfoByBox(val).then((res) => {
 			formData.value.turnNumber = val
-			material.value = {
-				...res.content
-			}
+			// console.log(res);
+			list.value=res.content
+			// material.value = {
+			// 	...res.content[0]
+			// }
 			audioSuccessPlay()
 			if (isUnbox.value) {
 				isOneClick.value = false
@@ -191,11 +205,12 @@
 			}
 		}).catch((error) => {
 			// restMaterial()
-			material.value.OrderNumber = ''
-			material.value.ProductName = ''
-			material.value.ProductDescription = ''
-			material.value.PanelQty = ''
-			material.value.PcbQty = ''
+			// material.value.OrderNumber = ''
+			// material.value.ProductName = ''
+			// material.value.ProductDescription = ''
+			// material.value.PanelQty = ''
+			// material.value.PcbQty = ''
+			list.value=[]
 			audiofailPlay()
 			if (isUnbox.value) {
 				if(formData.value.turnNumber!==''){
@@ -225,15 +240,10 @@
 			audioSuccessPlay()
 			uni.showToast({
 				title: res.msg,
-				icon: 'success',
+				icon: 'none',
 			})
-			// getInfoData()
-			material.value.OrderNumber = ''
-			material.value.ProductName = ''
-			material.value.ProductDescription = ''
-			material.value.PanelQty = ''
-			material.value.PcbQty = ''
 			isOneClick.value = true
+			list.value=[]
 		}).catch((error) => {
 			audiofailPlay()
 		})
@@ -274,4 +284,16 @@
 			height: 28px;
 		}
 	}
+</style>
+<style lang="scss">
+	.test .u-form-item__body__left__content__label {
+		font-size: 13px;
+	}
+
+	.test .u-form-item__body {
+		padding: 5px 0;
+		font-size: 12px;
+	}
+
+
 </style>
