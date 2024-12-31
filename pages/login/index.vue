@@ -19,9 +19,13 @@
 				<input v-model="loginForm.DocManagerUser" type="password" class="input" placeholder="请输入密码"
 					maxlength="20" />
 			</view>
+			<view class="remember-psw" style="margin-top: 5px;display: flex;flex-direction: row-reverse;">
+					<wd-checkbox v-model="rememberPsw" shape="square" @change="handleChange">记住密码</wd-checkbox>
+			</view>
 			<view class="action-btn">
 				<button @click="handleLogin" class="login-btn cu-btn block bg-blue lg round">登录</button>
 			</view>
+		
 
 			<view class="xieyi text-center">
 				<!-- <text class="text-grey1">登录即代表同意</text>
@@ -47,22 +51,37 @@
 	import toastObj from '@/utils/toast.js'
 	import {
 		ref,
-		unref
+		unref,
+		onMounted
 	} from 'vue'
 	import msgMEStore from "@/stores/msg.js"
 	const msgStore = msgMEStore()
 	const title = ref('MES管理平台')
 	const subTitle = ref('欢迎回来，开始工作吧！')
 	const loginForm = ref({
-		EmployeeName: 'CamstarAdmin',
-		DocManagerUser: '123456',
+		EmployeeName: '',
+		DocManagerUser: '',
 	})
-	const textArr=ref([])
+	const textArr = ref([])
 	const userStore = useUserStore()
+	const rememberPsw = ref(false)
+	onMounted(() => {
+		loginForm.value.EmployeeName = uni.getStorageSync('userName') || ""
+		loginForm.value.DocManagerUser = uni.getStorageSync('userPsw') || ""
+		if(uni.getStorageSync('userPsw')){
+			rememberPsw.value=true
+			// rememberPsw.value=JSON.parse(uni.getStorageSync('rememberPsw'))
+		}
+	})
+
+const handleChange=(val)=>{
+	// console.log(val);
+	uni.setStorageSync('rememberPsw', rememberPsw);
+}
 	const handleLogin = () => {
-		if (unref(loginForm).username == '') {
+		if (unref(loginForm).EmployeeName == '') {
 			toastObj.msgError('请输入您的账号')
-		} else if (unref(loginForm).password === "") {
+		} else if (unref(loginForm).DocManagerUser === "") {
 			toastObj.msgError("请输入您的密码")
 		} else {
 			toastObj.loading("登录中，请耐心等待...")
@@ -71,6 +90,15 @@
 	}
 	const pwdLogin = () => {
 		loginApp(unref(loginForm)).then(res => {
+			if (rememberPsw.value) {
+				uni.setStorageSync('userName', loginForm.value.EmployeeName);
+				uni.setStorageSync('userPsw', loginForm.value.DocManagerUser);
+			} else {
+				uni.setStorageSync('userName', loginForm.value.EmployeeName);
+				uni.removeStorageSync('userPsw')
+			}
+
+
 			const dataText = res.content
 			setToken(dataText.Token)
 			userStore.SET_TOKEN(dataText.Token)
@@ -88,7 +116,7 @@
 				getMenu().then(res => {
 					const dataText = res.content
 					const systemRouter = dataText.filter((v) => v.MenuName == 'PDA')
-					systemRouter.length>0&&userStore.SET_PERMISSIONS(systemRouter[0].childMenu)
+					systemRouter.length > 0 && userStore.SET_PERMISSIONS(systemRouter[0].childMenu)
 					// console.log(systemRouter[0].childMenu);
 					// systemRouter.length>0&&dataParmisson(systemRouter[0])
 					// console.log(textArr.value);
@@ -99,21 +127,21 @@
 			uni.reLaunch({
 				url: '/pages/index'
 			})
-		}) 
+		})
 	}
-	const dataParmisson=(data)=>{
-		let str=data.MenuName
-		data.childMenu.forEach(v=>{
-			let str2=str+':'+v.MenuName
+	const dataParmisson = (data) => {
+		let str = data.MenuName
+		data.childMenu.forEach(v => {
+			let str2 = str + ':' + v.MenuName
 			textArr.value.push(str2)
-			if(v.childMenu.length>0&&v.childMenu!==null){
-				v.childMenu.forEach(d=>{
-					let str3=str2+':'+d.MenuName
+			if (v.childMenu.length > 0 && v.childMenu !== null) {
+				v.childMenu.forEach(d => {
+					let str3 = str2 + ':' + d.MenuName
 					textArr.value.push(str3)
 				})
 			}
 		})
-		
+
 	}
 </script>
 
@@ -169,7 +197,7 @@
 			}
 
 			.login-btn {
-				margin-top: 40px;
+				margin-top: 20px;
 				height: 45px;
 			}
 

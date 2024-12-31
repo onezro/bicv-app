@@ -6,7 +6,7 @@
 					src="https://uview-plus.jiangruyi.com/uview-plus/album/1.jpg"></up-avatar>
 				<view class="avatar-info">
 					<view class="">{{name}}</view>
-					<view class="role">管理员 </view>
+					<!-- <view class="role">管理员 </view> -->
 				</view>
 			</view>
 			<!-- <uni-icons type="right" color="#ffffffc4" size="24"></uni-icons> -->
@@ -86,6 +86,7 @@
 	import {
 		GetPDAVersion
 	} from "@/api/login.js"
+	import {updateApp}  from "@/utils/updateApp.js"
 	const userStore = useUserStore()
 	const {
 		name
@@ -131,7 +132,22 @@
 		})
 	}
 	const handleToUpgrade = () => {
-		showModal.value = true
+		uni.showModal({
+			title: `发现新版本${newVerMess.value.CurrentVer}`,
+			content: newVerMess.value.UpdateLog,
+			cancelText: "暂不更新",
+			confirmText: "更新",
+			success: data => {
+				if (data.confirm) {
+				updateApp(newVerMess.value.UpdateUrl)
+				} else if (data.cancel) {
+					uni.showToast({
+						title: '已取消更新',
+						icon: 'error',
+					})
+				}
+			}
+		})
 		// uni.showModal({
 		// 	title: '提示',
 		// 	content: '是否更新',
@@ -146,6 +162,7 @@
 		// 		}
 		// 	}
 		// })
+		// showModal.value = true
 	}
 	const confirm = () => {
 		showModal.value = false
@@ -238,7 +255,8 @@
 			content: `是否清除apk`,
 			success: (res) => {
 				if (res.confirm) {
-				delFile('_doc/uniapp_save')
+				delFile('_doc/uniapp_save/')
+				delFile('_doc/update/')
 				} else if (res.cancel) {
 		
 				}

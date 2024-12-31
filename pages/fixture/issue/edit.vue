@@ -101,6 +101,15 @@
 		onLoad,
 		onReady
 	} from "@dcloudio/uni-app"
+		import useUserStore from '@/stores/user.js'
+	import {
+		storeToRefs
+	} from 'pinia'
+	const userStore = useUserStore()
+	const {
+		name
+	} = storeToRefs(userStore)
+	
 
 
 	const orderNo = ref('')
@@ -112,7 +121,8 @@
 		location: "",
 		orderNumber: "",
 		compName: "",
-		ToolsTaskDetailGuid: ""
+		ToolsTaskDetailGuid: "",
+		userAccount: name.value
 	})
 	const getToolForm = ref({
 		ToolName: "",
@@ -178,6 +188,7 @@
 		uni.hideKeyboard()
 	}
 	const submitQRCode = () => {
+		console.log(formData.value);
 		if (toolsList.value.length < Amount.value) {
 			ToolsMove(formData.value).then(res => {
 				audioSuccessPlay()
@@ -225,7 +236,8 @@
 						orderNumber: formData.value.orderNumber,
 						compName: l.CompName,
 						ToolsTaskDetailGuid: toolID.value,
-						toolType: l.MaterialName
+						toolType: l.MaterialName,
+							userAccount: name.value
 					})
 				}
 

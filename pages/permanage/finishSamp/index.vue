@@ -1,21 +1,33 @@
 <template>
 	<view class="content">
 		<view class="sect1">
-		<uni-section title="基本信息" type="line" class="">
-			<view class="box">
-				<up-form ref="baseForm" :model="formData" :borderBottom='true' labelWidth="80">
-					<up-form-item label="箱条码" class='test'>
-						<up-input style="height: 30px;" :adjustPosition="true" fontSize='13px' border="surround"
-							v-model="formData.Container" @confirm="submitQRCode" :focus="barCodeFocus" @focus="focus">
-							<template #suffix>
-								<uni-icons type="scan" color="#bdbdbd" @click="iconClickQRCode" size="20"></uni-icons>
-							</template>
-						</up-input>
-					</up-form-item>
+			<uni-section title="基本信息" type="line" class="">
+				<view class="box">
+					<up-form ref="baseForm" :model="formData" :borderBottom='true' labelWidth="80">
+						<up-form-item label="计划单号" prop="MfgOrderName" class='test'>
+							<up-input placeholder="计划单号" v-model="formData.MfgOrderName" disabled style="height: 30px;"
+								fontSize='13px'>
+							</up-input>
+						</up-form-item>
+						<up-form-item label="箱条码" class='test'>
+							<up-input style="height: 30px;" :adjustPosition="true" fontSize='13px' border="surround"
+								v-model="formData.Container" @confirm="submitQRCode" :focus="barCodeFocus"
+								@focus="focus">
+								<template #suffix>
+									<uni-icons type="scan" color="#bdbdbd" @click="iconClickQRCode"
+										size="20"></uni-icons>
+								</template>
+							</up-input>
+						</up-form-item>
 
-				</up-form>
-			</view>
-		</uni-section>
+					</up-form>
+					<view class="" style="display: flex;justify-content: flex-end;">
+						<view class="">
+						<wd-button size="small" :round="false" type="info" @click="reset">重置</wd-button>
+						</view>
+					</view>
+				</view>
+			</uni-section>
 
 		</view>
 		<uni-section title="送检清单" type="line" class="sect" style="flex: 1;">
@@ -25,16 +37,16 @@
 						<uni-swipe-action-item v-for="(f,i) in  boxList" :key="f.ContainerName"
 							:right-options="rightOptions" @click="swipeClick($event, f.ContainerName)"
 							:disabled='f.Qty==0'>
-							<uni-list-item :title="`箱条码：`+f.ContainerName" :rightText="'数量：'+f.Capacity" />
+							<uni-list-item :title="`箱条码：`+f.ContainerName" :rightText="'计划单号：'+f.MfgOrderName" />
 						</uni-swipe-action-item>
 					</uni-swipe-action>
 				</uni-list>
-				
+
 			</scroll-view>
 			<template v-slot:right>
 				<up-button class="custom-style" type="primary" :disabled="boxList.length==0" text="送检提交"
 					@click="onSubmit"></up-button></template>
-				<!-- <view class="button-box">
+			<!-- <view class="button-box">
 
 				<up-button class="custom-style" type="primary" :disabled="boxList.length==0" text="送检提交" @click="onSubmit"></up-button>
 			</view> -->
@@ -73,12 +85,13 @@
 		workStationDec: '',
 		workstationName: '',
 		MfgOrder: '',
+		MfgOrderName: "",
 		ProductName: '',
 		ProductDesc: '',
 		Qty: '',
 		type: '',
 		Container: '',
-		userAccount: name
+		userAccount: name.value
 	})
 	const barCodeFocus = ref(true)
 	const secthe = ref(0)
@@ -126,7 +139,7 @@
 			onlyFromCamera: true,
 			scanType: ['qrCode', 'barCode', 'datamatrix', 'pdf417'],
 			success: res => {
-				formData.value.Container=res.result
+				formData.value.Container = res.result
 				submitQRCode()
 			}
 		});
@@ -134,36 +147,42 @@
 	const submitQRCode = () => {
 
 		const data = {
-			WorkStation: formData.value.workstationName,
 			CarrierName: formData.value.Container
 		}
 		const isEixt = boxList.value.findIndex(b => b.ContainerName == formData.value.Container)
 		if (isEixt == -1) {
-			// console.log(data);
 			ProductInspectDetails(data).then(res => {
-				// boxFormRef.value.resetFields()
-				formData.value.Container = ""
-				if (res.success) {
-					// console.log(res);
-					
+				if(formData.value.MfgOrderName==""){
+					formData.value.MfgOrderName=res.content.MfgOrderName
+				}
+				console.log(res.content);
+				if(res.content.MfgOrderName==formData.value.MfgOrderName){
 					audioSuccessPlay()
-					boxForm.value.Capacity = res.content.Capacity
+					formData.value.MfgOrderName=res.content.MfgOrderName
 					boxForm.value.ContainerName = res.content.CarrierName
-					boxForm.value.Quantity = res.content.CurrentCapacity
-					boxForm.value.Inspector = userStore.name
-					boxForm.value.Date = getDateTody()
+					boxForm.value.userAccount = name.value
+					boxForm.value.MfgOrderName = res.content.MfgOrderName
+					boxForm.value.Inspector = name.value
 					boxList.value.push({
 						...boxForm.value
 					})
-					boxForm.value=[]
+					boxForm.value = []
+				}else{
+					audiofailPlay()
+					uni.showToast({
+						title: `${res.content.MfgOrderName}计划单号不一致`,
+						icon: 'none',
+					})
 				}
+				
+				formData.value.Container = ""
 				getFocus()
 			}).catch(() => {
 				audiofailPlay()
 				// boxFormRef.value.resetFields()
 				formData.value.Container = ""
 				getFocus()
-				
+
 			})
 		} else {
 			formData.value.Container = ""
@@ -185,15 +204,16 @@
 		let data = {
 			item: [...boxList.value]
 		}
-		console.log(data);
+		// console.log(data);
 		ProductInspect(data).then(res => {
 			if (res.success) {
 				// boxFormRef.value.resetFields()
 				boxList.value = []
+				formData.value.MfgOrderName=""
 				audioSuccessPlay()
 				uni.showToast({
 					title: res.msg,
-					icon: 'success',
+					icon: 'none',
 				})
 				getFocus()
 			}
@@ -209,6 +229,12 @@
 		boxForm.value.boxCran = ""
 		boxForm.value.capacity = ""
 		boxList.value = []
+	}
+	const reset=()=>{
+		boxList.value=[]
+		formData.value.MfgOrderName=""
+		formData.value.Container=""
+		getFocus()
 	}
 </script>
 

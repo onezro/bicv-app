@@ -16,7 +16,7 @@
 						</up-input>
 					</up-form-item> -->
 					<up-form-item label="治具编码" class='test'>
-						<up-input placeholder="请输入治具编码" @focus="focus"  :focus="barCodeFocus" v-model="formData.ToolName"
+						<up-input placeholder="请输入治具编码" @focus="focus" :focus="barCodeFocus" v-model="formData.ToolName"
 							@confirm="submitQRCode" style="height: 30px;" fontSize='13px'>
 							<template #suffix>
 								<uni-icons type="scan" color="#bdbdbd" @click="iconClickQRCode" size="20"></uni-icons>
@@ -34,17 +34,29 @@
 				</uni-list>
 			</scroll-view>
 			<template v-slot:right>
-						  已上线：<text style="color: red;font-weight: bold;">{{list.length}}</text>
-						  </template>
-		</uni-section>
+				<view class="" style="display: flex;align-items:center;">
+					<view class="" style="padding-right:15px;">
+						已上线：<text style="color: red;font-weight: bold;">{{list.length}}</text>
+					</view>
+					<wd-picker ref="wdPickerRef" :columns="orderData" @confirm="handleConfirm" v-model="order"
+						use-default-slot>
+						<wd-button type="primary" size="small" @click="submitList"
+							:disabled="list.length==0">一键转单</wd-button>
+					</wd-picker>
 
+				</view>
+			</template>
+		</uni-section>
+		<!-- <wd-picker ref="wdPickerRef" :columns="orderData"  v-model="order" @confirm="handleConfirm" /> -->
 	</view>
 </template>
 
 <script setup>
 	import {
 		ToolOnline,
-		QueryTools
+		QueryTools,
+		QueryToolsTaskNo,
+		ToolChangeOrder
 	} from '@/api/work.js'
 	import {
 		audioSuccessPlay,
@@ -71,10 +83,10 @@
 		WorkStationName: "",
 		workStationDec: '',
 		line: '',
-		EmployeeName: name,
+		EmployeeName: name.value,
 		OrderNumber: "",
 		OperateType: "",
-		userAccount: name,
+		userAccount: name.value,
 	})
 	const barCodeFocus = ref(false)
 	const list = ref([])
@@ -86,6 +98,9 @@
 		workstationName: ""
 	})
 	const secthe = ref(0)
+	const orderData = ref([])
+	const order = ref("")
+	const wdPickerRef = ref()
 	onLoad(options => {
 		// console.log(options);
 		formData.value.WorkStationName = options.workStation
@@ -98,13 +113,14 @@
 		// 	secthe.value = ((data.height) - 40) + 'px'
 		// }).exec()
 		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
-			secthe.value=(uni.getSystemInfoSync().windowHeight-Math.round(data.height+48))+'px'
+			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
 		}).exec()
 
 	})
 	onMounted(() => {
 		getFocus()
 		getTool()
+		// getOrderData()
 	})
 	const getFocus = () => {
 		barCodeFocus.value = false
@@ -113,7 +129,7 @@
 			uni.hideKeyboard()
 		}, 100)
 	}
-	const focus=()=>{
+	const focus = () => {
 		uni.hideKeyboard()
 	}
 	const getTool = () => {
@@ -121,6 +137,25 @@
 			list.value = res.content
 		})
 	}
+	// const getOrderData = () => {
+	// 	const uniqueCompNames = [...new Set(list.value.map(item => item.CompName))];
+	// 	let data = {
+	// 		CompName: [],
+	// 		workstationName: formData.value.WorkStationName,
+	// 		tools: "",
+	// 		userAccount: name.value,
+	// 	}
+	// 	data.CompName=uniqueCompNames
+	// 	QueryToolsTaskNo(data).then(res => {
+	// 		orderData.value = res.content.map(r => {
+	// 			return {
+	// 				text: r.TaskNo,
+	// 				value: r.TaskNo,
+	// 				ProcedureCode: r.ProcedureCode
+	// 			}
+	// 		})
+	// 	})
+	// }
 	const submitQRCode = () => {
 		// console.log(formData.value);
 		ToolOnline(formData.value).then(res => {
@@ -150,6 +185,70 @@
 				formData.value.ToolName = res.result
 			}
 		});
+	}
+	const submitList = () => {
+		const uniqueCompNames = [...new Set(list.value.map(item => item.CompName))];
+		const uniqueOrder = [...new Set(list.value.map(item => item.OrderID))]
+		let data = {
+			CompName: [],
+			workstationName: formData.value.WorkStationName,
+			tools: "",
+			userAccount: name.value,
+		}
+		data.CompName = uniqueCompNames
+
+		QueryToolsTaskNo(data).then(res => {
+			let arr = []
+			res.content.forEach(r => {
+				if (!uniqueOrder.includes(r.TaskNo)) {
+					arr.push({
+						text: r.TaskNo,
+						value: r.TaskNo,
+						ProcedureCode: r.ProcedureCode
+					})
+
+				}
+			})
+			orderData.value = arr
+			wdPickerRef.value.open()
+		})
+
+	}
+	const handleConfirm = (val) => {
+		if (val.value == "") {
+			uni.showToast({
+				title: `无转单任务`,
+				icon: 'error',
+				duration: 2000
+			})
+			return
+		}
+		let data = {
+			ToOrderNumber: val.value,
+			SpecName: val.selectedItems.ProcedureCode,
+			compEntity: [],
+			workstationName: formData.value.WorkStationName,
+			userAccount: name.value
+		}
+		list.value.forEach(l => {
+			data.compEntity.push({
+				FromOrderNumber:l.OrderID,
+				CompName: l.CompName,
+				CompId: l.CompID
+			})
+		})
+
+		ToolChangeOrder(data).then(res => {
+			getTool()
+			audioSuccessPlay()
+			uni.showToast({
+				title: res.msg,
+				icon: 'none',
+				duration: 2000
+			})
+		}).catch((error) => {
+			audiofailPlay()
+		})
 	}
 </script>
 

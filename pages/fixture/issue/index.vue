@@ -110,7 +110,6 @@
 	} from 'vue'
 	import {
 		onShow,
-
 		onReachBottom,
 		onPullDownRefresh,
 	} from "@dcloudio/uni-app"

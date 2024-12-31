@@ -320,6 +320,27 @@
 			{
 				"navigationBarTitleText" : "屏半成品入库"
 			}
+		},
+		{
+			"path" : "pages/permanage/converting/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工单转产"
+			}
+		},
+		{
+			"path" : "pages/permanage/borrowing/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工单借料"
+			}
+		},
+		{
+			"path" : "pages/permanage/asySemiFinish/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "组装成品入库"
+			}
 		}
 	],
 	"tabBar": {

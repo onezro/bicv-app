@@ -3,9 +3,9 @@ import {
 } from '@/request/workRequest.js'
 
 //工厂模型
-export function GetFactoryModelList(data) {
+export function GetFactoryModelPADList(data) {
     return request({
-        url: `/api/system/GetFactoryModelList`,
+        url: `/api/system/GetFactoryModelPADList`,
         method: "post",
     });
 }
@@ -14,6 +14,22 @@ export function GetFactoryModelList(data) {
 export function ToolOnline(data){
 	return request({
 		url:'/api/Tools/ToolOnline',
+		method:'POST',
+		data
+	})
+}
+//转单任务单
+export function QueryToolsTaskNo(data){
+	return request({
+		url:`/api/Tools/QueryToolsTaskNo`,
+		method:'POST',
+		data
+	})
+}
+//一键转单
+export function ToolChangeOrder(data){
+	return request({
+		url:'/api/Tools/ToolChangeOrder',
 		method:'POST',
 		data
 	})
@@ -89,4 +105,45 @@ export function QueryTools(data){
 		method:'POST',
 		data
 	})
+}
+//转产
+export function findOrder(data) {
+    return request({
+        url: "/api/order/OrderQuery",
+        method: "post",
+        data
+    })
+}
+
+//查询生产计划转单物料清单
+export function QueryChangeOrderMaterialRequired(data) {
+    return request({
+        url: "/api/order/QueryChangeOrderMaterialRequired",
+        method: "post",
+        data
+    });
+}
+export function ApplyChangeOrderMaterialRequired(data) {
+    return request({
+        url: "/api/order/ApplyChangeOrderMaterialRequired",
+        method: "post",
+        data
+    });
+}
+
+//借料
+export function LendOrderMaterialBatchNo(data) {
+    return request({
+        url: "/api/order/LendOrderMaterialBatchNo",
+        method: "post",
+        data
+    });
+}
+//借料生产计划验证
+export function LendOrderMaterialToOrder(data) {
+    return request({
+        url: "/api/order/LendOrderMaterialToOrder",
+        method: "post",
+        data
+    });
 }

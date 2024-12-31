@@ -60,7 +60,7 @@
 		</uni-section>
 		<uni-section title="入库列表" type="line" class="sect" style="flex: 1;">
 			<scroll-view scroll-y="true" :style="{height:secthe}">
-				<uni-list>
+				<uni-list >
 					<uni-swipe-action>
 						<uni-swipe-action-item v-for="f in  list" :key="f" :right-options="rightOptions"
 							@click="swipeClick($event, f)">
@@ -73,10 +73,6 @@
 				
 			</scroll-view>
 			
-			<!-- <view class="button-box">
-				<up-button class="custom-style" type="primary" :disabled="list.length==0" text="提交入库"
-					@click="onSubmit"></up-button>
-			</view> -->
 			<template v-slot:right>
 				<view class="" style="display: flex;align-items: center;">
 				数量：<text style="color: red;font-weight: bold;">{{list.length}}</text>

@@ -46,22 +46,35 @@ const request = (options) => {
 		}).then(res => {
 			uni.hideLoading()
 			const code = res.data.code || 200
-			const msg = res.data.msg || errorCode['default']
+			const msg = res.data.msg || ''
 			// console.log(res.data);
 			if (code == 100300) {
 				resolve(res.data)
-			} else if (code === 100500) {
+			}else if (code === 404){
+				uni.showToast({
+					title: msg,
+					icon: 'none'
+				})
+				uni.reLaunch('/pages/login/index')
+			}
+			 else if (code === 100500) {
 				uni.showToast({
 					title: msg,
 					icon: 'none'
 				})
 				reject('500')
+			}else{
+				resolve(res.data)
 			}
 
-			resolve(res.data)
+			
 			// let [error, res] = response
 		}).catch(error => {
 			uni.hideLoading()
+			uni.showToast({
+				title: msg,
+				icon: 'none'
+			})
 			console.log(error, 1);
 		})
 	})

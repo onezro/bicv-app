@@ -23,6 +23,10 @@
 							</template>
 						</up-input>
 					</up-form-item>
+					<up-form-item label="备注" class='test'>
+						<up-input v-model="formData.Remark"  style="height: 30px;" fontSize='13px'>
+						</up-input>
+					</up-form-item>
 				</up-form>
 			</view>
 		</uni-section>
@@ -90,6 +94,7 @@
 		workStationDec: "",
 		MfgOrderName: "",
 		ScreenBarCode: "",
+		Remark:"",
 		count: 1
 	})
 	const secthe = ref(0)
@@ -127,6 +132,7 @@
 		OrderQuery({
 			lineName: line.value
 		}).then(res => {
+			// console.log(res.content);
 			orderList.value = res.content.map(c => {
 				return {
 					...c,
@@ -147,6 +153,7 @@
 	}
 	const change = () => {
 		getFocus()
+		formData.value.Remark=""
 	}
 	const iconClickQRCode = () => {
 		uni.scanCode({
@@ -216,6 +223,7 @@
 			MfgOrderName: formData.value.MfgOrderName,
 			workstationName: formData.value.workstationName,
 			userAccount: name.value,
+			Remark:formData.value.Remark
 		}
 		list.value.forEach((t) => {
 			data.ScreenBarCodeList.push(t.ScreenBarCode)
@@ -228,6 +236,7 @@
 				icon: 'none',
 			})
 			getFocus()
+			formData.value.Remark=""
 			list.value = []
 		}).catch(error => {
 			audiofailPlay()
