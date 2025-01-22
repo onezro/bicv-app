@@ -9,7 +9,7 @@
 					</up-form-item> -->
 					<up-form-item label="计划单号" prop="MfgOrderName" class='test'>
 						<up-input placeholder="请输入验证计划单号" style="height: 30px;" fontSize='13px' :focus="true"
-							v-model="formData.MfgOrderName"  clearable @confirm="checkOrder">
+							v-model="formData.MfgOrderName" clearable @confirm="checkOrder">
 							<template #suffix>
 								<uni-icons type="checkbox" :color="isOrder?'#bdbdbd':'#00B400'" @click="checkOrder"
 									size="20"></uni-icons>
@@ -17,7 +17,7 @@
 						</up-input>
 					</up-form-item>
 					<up-form-item label="库位" prop="Loc" class='test'>
-						<up-input placeholder="请扫描库位" style="height: 30px;" :focus='locFocus'   clearable fontSize='13px'
+						<up-input placeholder="请扫描库位" style="height: 30px;" :focus='locFocus' clearable fontSize='13px'
 							:disabled="isOrder" @focus="focus" v-model="formData.Loc" @confirm="getFocus">
 							<template #suffix>
 								<uni-icons type="scan" color="#bdbdbd" @click="iconGoodQRCode" size="20"></uni-icons>
@@ -26,7 +26,8 @@
 					</up-form-item>
 					<up-form-item label="箱条码" prop="barCode" class='test'>
 						<up-input placeholder="请扫描条码" :adjustPosition="true" style="height: 30px;" fontSize='13px'
-							:disabled="isOrder" @focus="focus" :focus='orderFocus' v-model="formData.barCode" @confirm="submit">
+							:disabled="isOrder" @focus="focus" :focus='orderFocus' v-model="formData.barCode"
+							@confirm="submit">
 							<template #suffix>
 								<uni-icons type="scan" color="#bdbdbd" @click="iconBarQRCode" size="20"></uni-icons>
 							</template>
@@ -43,9 +44,9 @@
 
 						</up-col>
 						<up-col span="6"> -->
-							<up-form-item label="日期" prop="date" class='test' >
-								<uni-datetime-picker type="date" :clear-icon="false" v-model="formData.InTime"  />
-							</up-form-item>
+					<up-form-item label="日期" prop="date" class='test'>
+						<uni-datetime-picker type="date" :clear-icon="false" v-model="formData.InTime" />
+					</up-form-item>
 					<!-- 	</up-col>
 					</up-row> -->
 
@@ -60,27 +61,28 @@
 		</uni-section>
 		<uni-section title="入库列表" type="line" class="sect" style="flex: 1;">
 			<scroll-view scroll-y="true" :style="{height:secthe}">
-				<uni-list >
+				<uni-list>
 					<uni-swipe-action>
 						<uni-swipe-action-item v-for="f in  list" :key="f" :right-options="rightOptions"
 							@click="swipeClick($event, f)">
-							<uni-list-item :title="'箱条码：'+f.BoxContainer" :note="'产品编码：'+f.ProductName"  :rightText="'数量：'+f.TotalQty" />
+							<uni-list-item :title="'箱条码：'+f.BoxContainer" :note="'产品编码：'+f.ProductName"
+								:rightText="'数量：'+f.TotalQty" />
 							<!-- <uni-list-item :title="'周转箱条码：'+f.ContainerName" :note="'备注：'+f.remark"
 								:rightText="'库位：'+f.goodWei" /> -->
 						</uni-swipe-action-item>
 					</uni-swipe-action>
 				</uni-list>
-				
+
 			</scroll-view>
-			
+
 			<template v-slot:right>
 				<view class="" style="display: flex;align-items: center;">
-				数量：<text style="color: red;font-weight: bold;">{{list.length}}</text>
-			   <up-button class="custom-style" style="margin-left: 10px;"  type="primary" :disabled="list.length==0" text="提交入库"
-			   	@click="onSubmit"></up-button>
+					数量：<text style="color: red;font-weight: bold;">{{list.length}}</text>
+					<up-button class="custom-style" style="margin-left: 10px;" type="primary" :disabled="list.length==0"
+						text="提交入库" @click="onSubmit"></up-button>
 				</view>
-			  </template>
-		</uni-section> 
+			</template>
+		</uni-section>
 
 
 	</view>
@@ -121,7 +123,7 @@
 		barCode: '',
 		BoxContainers: [],
 		// inquan: 0,
-		ERPOrder:'',
+		ERPOrder: '',
 		InTime: '',
 		remark: '',
 		workstationName: '',
@@ -145,14 +147,14 @@
 			backgroundColor: '#F56C6C'
 		}
 	}])
-	const locFocus=ref(false)
+	const locFocus = ref(false)
 	onReady(() => {
-		
+
 		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
-			secthe.value=(uni.getSystemInfoSync().windowHeight-Math.round(data.height+55))+'px'
+			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
 		}).exec()
 	})
-	const focus=()=>{
+	const focus = () => {
 		uni.hideKeyboard()
 	}
 	//监听工单号改变
@@ -183,7 +185,7 @@
 	//验证工单
 	const checkOrder = () => {
 		CheckScreenWarehousingOrder({
-			MfgOrderName:formData.value.MfgOrderName
+			MfgOrderName: formData.value.MfgOrderName
 		}).then(res => {
 			// console.log(res);
 			isOrder.value = false
@@ -199,7 +201,7 @@
 	}
 
 	const submit = () => {
-		if(list.value.length>=3){
+		if (list.value.length >= 3) {
 			uni.showToast({
 				title: '超过最大提交数',
 				icon: 'error',
@@ -211,13 +213,13 @@
 			MfgOrderName: formData.value.MfgOrderName,
 			BoxContainer: formData.value.barCode
 		}).then(res => {
-			formData.value.ERPOrder=res.content[0].ERPOrder==null?"":res.content[0].ERPOrder
+			formData.value.ERPOrder = res.content[0].ERPOrder == null ? "" : res.content[0].ERPOrder
 			let isEixt = list.value.findIndex(l => l.BoxContainer == formData.value.barCode)
 			if (isEixt == -1) {
 				list.value.unshift({
-					BoxContainer:formData.value.barCode,
-					ProductName:res.content[0].ProductName,
-					TotalQty:res.content[0].qty
+					BoxContainer: formData.value.barCode,
+					ProductName: res.content[0].ProductName,
+					TotalQty: res.content[0].qty
 				})
 				// list.value.unshift(formData.value.barCode)
 				audioSuccessPlay()
@@ -239,11 +241,10 @@
 
 	}
 	const onSubmit = () => {
-		list.value.forEach((t)=>{
+		list.value.forEach((t) => {
 			formData.value.BoxContainers.push(t.BoxContainer)
 		})
-	// console.log(formData.value);
-	
+
 		PackingCarrierScreenWarehousing(formData.value).then(res => {
 			// console.log(res);
 			audioSuccessPlay()
@@ -253,13 +254,13 @@
 			})
 			list.value = []
 			formData.value.remark = '',
-			formData.value.BoxContainers=[]
+				formData.value.BoxContainers = []
 			formData.value.InTime = setDefaultDate()
 		}).catch((error) => {
 			audiofailPlay()
-			formData.value.BoxContainers=[]
+			formData.value.BoxContainers = []
 			formData.value.InTime = setDefaultDate()
-			
+
 		})
 		// console.log(formData.value);
 	}
@@ -329,6 +330,7 @@
 				height: 28px;
 			}
 		}
+
 		.custom-style {
 			width: 80px;
 			height: 28px;

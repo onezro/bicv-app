@@ -67,7 +67,7 @@
  		CheckContainers,
  		SubmitBurnToStock
 
- 	} from '@/api/index.js'
+ 	} from '@/api/smt.js'
  	import {
  		ref,
  		watch,

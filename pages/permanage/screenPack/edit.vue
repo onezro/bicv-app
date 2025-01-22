@@ -11,6 +11,11 @@
 						<uni-data-select v-model="formData.MfgOrderName" :localdata="orderList" @change="change"
 							:clear="false" style="height: 30px;"></uni-data-select>
 					</up-form-item>
+					<up-form-item label="产品描述" class='test'>
+						<!-- <text style="font-size: 13px;">{{formData.ProductDesc}}</text> -->
+						<up-textarea height="35px" class="texta" v-model="formData.ProductDesc" disabled></up-textarea>
+					</up-form-item>
+					
 					<up-form-item label="包装数" class='test'>
 						<up-number-box v-model="formData.count" ></up-number-box>
 					</up-form-item>
@@ -58,7 +63,7 @@
 	// import {} from "@/api/scr.js"
 	import {
 		OrderQuery
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		JudgeScreenBarCodeNews,
 		AssociationScreenAndBoxBarCodeNews
@@ -94,6 +99,7 @@
 		workStationDec: "",
 		MfgOrderName: "",
 		ScreenBarCode: "",
+		ProductDesc:"",
 		Remark:"",
 		count: 1
 	})
@@ -151,7 +157,10 @@
 	const focus = () => {
 		uni.hideKeyboard()
 	}
-	const change = () => {
+	const change = (val) => {
+		// console.log(val);
+		const changeObj=orderList.value.find(o=>o.value==val)
+		formData.value.ProductDesc=changeObj.ProductDesc
 		getFocus()
 		formData.value.Remark=""
 	}
@@ -281,6 +290,9 @@
 
 	.test .u-form-item__body {
 		padding: 5px 0;
+		font-size: 12px;
+	}
+	.texta .uni-textarea-textarea {
 		font-size: 12px;
 	}
 

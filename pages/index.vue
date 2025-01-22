@@ -3,18 +3,18 @@
 		<view class="bigBox">
 			<image class="imgbg" src="../static/zn4.gif" mode="widthFix"></image>
 		</view>
-		
-			<uni-section v-for="(m,i) in  permissions" :key="m.id" :title="m.title" type="line" titleFontSize='18px'>
-				<uni-grid  :column="4" :show-border="false" @change="goToFist1($event,m.title,m.childMenu)">
-					<uni-grid-item v-for="(c,index) in m.childMenu" :index="index" :key="index">
-						<view class="box">
-							<image class="img" :src="c.MenuName" mode=""></image>
-							<view class="grid-text">{{c.title}}</view>
-						</view>
-					</uni-grid-item>
-				</uni-grid>
-			</uni-section>
-	
+
+		<uni-section v-for="(m,i) in  permissions" :key="m.id" :title="m.title" type="line" titleFontSize='18px'>
+			<uni-grid :column="4" :show-border="false" @change="goToFist1($event,m.title,m.childMenu)">
+				<uni-grid-item v-for="(c,index) in m.childMenu" :index="index" :key="index">
+					<view class="box">
+						<image class="img" :src="c.MenuName" mode=""></image>
+						<view class="grid-text">{{c.title}}</view>
+					</view>
+				</uni-grid-item>
+			</uni-grid>
+		</uni-section>
+
 		<!-- <uni-section title="IPQC" type="line" titleFontSize='18px' >
 			<uni-grid :column="4" :show-border="false" @change="goToFist">
 				<uni-grid-item v-for="(item,index) in meun" :index="index" :key="index">
@@ -44,43 +44,29 @@
 		onMounted
 	} from 'vue'
 	import {
-		onReady
+		onReady,
+		onPageScroll
 	} from "@dcloudio/uni-app"
 	const mesStore = mesMESStore()
 	const userStore = useUserStore()
 	const {
 		permissions
 	} = storeToRefs(userStore)
-	// const meun = ref([{
-	// 		text: '首检',
-	// 		color: 'rgb(84 184 249)',
-	// 		code: 'FI',
-	// 		img: '../static/svg/first.svg'
-	// 	},
-	// 	{
-	// 		text: '巡检',
-	// 		color: 'rgb(211 142 247)',
-	// 		code: 'RI',
-	// 		img: '../static/svg/inset.svg'
-	// 	}, {
-	// 		text: '设备点检',
-	// 		color: 'rgb(79 215 94)',
-	// 		code: 'EI',
-	// 		img: '../static/svg/eq.svg'
-	// 	},
-	// 	{
-	// 		text: '4M点检',
-	// 		color: 'rgb(69 152 251)',
-	// 		code: '4I',
-	// 		img: '../static/svg/wo.svg'
-	// 	},
-	// 	{
-	// 		text: '开班点检',
-	// 		color: 'rgb(69 152 251)',
-	// 		code: 'CI',
-	// 		img: '../static/svg/class.svg'
-	// 	}
-	// ])
+
+	onPageScroll((e) => {
+
+		// uni.createSelectorQuery().select('.bigBox').boundingClientRect(data => {
+		// 	if (e.scrollTop > data.height) {
+		// 		// 正确示范
+		// 		uni.setNavigationBarColor({
+		// 			frontColor: "#ffffff",
+		// 			backgroundColor: "#c9e5fd",
+		// 		})
+		// 	} else {
+
+		// 	}
+		// }).exec()
+	})
 	onReady(() => {
 		uni.createSelectorQuery().select('.bigBox').boundingClientRect(data => {
 			// console.log(data.height);
@@ -106,13 +92,12 @@
 			mesStore.SET_interfaceData({
 				inspectType: m[detail.index].component
 			})
-			// console.log(mesStore.interfaceData.value);
-			// console.log(m[detail.index].component);
+
 		}
 		uni.navigateTo({
 			url: m[detail.index].redirect
 		});
-		// console.log(detail.index,m);
+
 	}
 </script>
 

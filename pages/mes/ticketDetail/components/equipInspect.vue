@@ -110,7 +110,7 @@
 	import {
 		uploadResults,
 		confirmDeviceStatus
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		pathToBase64,
 		base64ToPath

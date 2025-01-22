@@ -6,8 +6,8 @@
 					<up-form-item label="是否打印" prop="IsPrint" class='test'>
 						<uni-data-checkbox v-model="formData.IsPrint" :localdata="localdata" />
 					</up-form-item>
-					<up-form-item label="计划单号" prop="MfgOrderName" class='test'>
-						<up-input placeholder="计划单号"  v-model="formData.MfgOrderName" disabled
+					<up-form-item label="送检单号" prop="QAOrder" class='test'>
+						<up-input placeholder="送检单号"  v-model="formData.QAOrder" disabled
 							style="height: 30px;" fontSize='13px' 
 							>
 						</up-input>
@@ -41,14 +41,16 @@
 						<uni-swipe-action-item v-for="f in  list" :key="f" :right-options="rightOptions"
 							@click="swipeClick($event, f)">
 							<uni-list-item :title="'箱条码：'+f.PackagingBoxNumber"
-								:note="'产品描述：'+f.ProductDescription"
-								:rightText="'计划号：'+f.MfgOrderName"></uni-list-item>
+								:note="'计划单号：'+f.MfgOrderName+'\n产品描述：'+f.ProductDescription+'\n产品机型：'+f.productmodel"
+								:rightText="'箱数量：'+f.CapacityOfBoxs"></uni-list-item>
 						</uni-swipe-action-item>
 					</uni-swipe-action>
 				</uni-list>
 			</scroll-view>
 			<template v-slot:right>
+				
 				<view class="" style="display: flex;align-items: center;">
+						入库总数：<text style="color: red;font-weight: bold;margin-right: 10px;">{{allCount}}</text>
 					<wd-button :round="false" :disabled="list.length==0"
 						size="small" @click="submit">提交入库</wd-button>
 				</view>
@@ -57,14 +59,15 @@
 	</view>
 </template>
 
-<script setup>
+<script setup>  
 	import {ScanPackagingBoxNumberDetails,FinishedProductStorage} from "@/api/asy.js"
 	import {
 		audioSuccessPlay,
 		audiofailPlay
 	} from "@/utils/prompt.js"
 	import {
-		ref
+		ref,
+		computed
 	} from 'vue'
 	import {
 		onLoad,
@@ -99,8 +102,14 @@
 		barCode:"",
 		MfgOrderName:"",
 		Remark:"",
+		QAOrder:""
 	})
 	const barCodeFocus=ref(true)
+	
+	const allCount=computed(()=>{
+		return  list.value.reduce((sum, e) => sum + Number(e.CapacityOfBoxs || 0), 0)
+	})
+	
 	onReady(() => {
 		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
 			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
@@ -117,14 +126,14 @@
 	}
 	const submitQRCode=()=>{
 		ScanPackagingBoxNumberDetails({PackagingBoxNumber:formData.value.barCode}).then(res=>{
-			if(formData.value.MfgOrderName==""){
-				formData.value.MfgOrderName=res.content[0].MfgOrderName
+			console.log(res.content);
+			if(formData.value.QAOrder==""){
+				formData.value.QAOrder=res.content[0].QAOrder
 			}
 			
-			if(res.content[0].MfgOrderName==formData.value.MfgOrderName){
+			if(res.content[0].QAOrder==formData.value.QAOrder){
 				
 				const isEixt = list.value.findIndex(b => b.PackagingBoxNumber == formData.value.barCode)
-				console.log(isEixt);
 				if(isEixt==-1){
 					audioSuccessPlay()
 					list.value.push({...res.content[0]})
@@ -138,7 +147,7 @@
 			}else{
 				audiofailPlay()
 				uni.showToast({
-					title: `${res.content[0].MfgOrderName}计划单号不一致`,
+					title: `${res.content[0].QAOrder}送检单号不一致`,
 					icon: 'none',
 				})
 				
@@ -181,6 +190,7 @@
 			})
 			list.value=[]
 			formData.value.MfgOrderName=""
+			formData.value.QAOrder=""
 			formData.value.Remark=""
 			formData.value.IsPrint=true
 			getFocus()
@@ -195,6 +205,7 @@
 	const reset=()=>{
 		list.value=[]
 		formData.value.MfgOrderName=""
+		formData.value.QAOrder=""
 		formData.value.barCode=""
 		formData.value.Remark=""
 		formData.value.IsPrint=true

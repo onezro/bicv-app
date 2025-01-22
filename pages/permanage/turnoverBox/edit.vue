@@ -72,7 +72,7 @@
 		QueryCarrierList,
 		LoadCarrier,
 		UnloadCarrier
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		audioSuccessPlay,
 		audiofailPlay

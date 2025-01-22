@@ -23,7 +23,7 @@
 					</up-form>
 					<view class="" style="display: flex;justify-content: flex-end;">
 						<view class="">
-						<wd-button size="small" :round="false" type="info" @click="reset">重置</wd-button>
+							<wd-button size="small" :round="false" type="info" @click="reset">重置</wd-button>
 						</view>
 					</view>
 				</view>
@@ -37,15 +37,21 @@
 						<uni-swipe-action-item v-for="(f,i) in  boxList" :key="f.ContainerName"
 							:right-options="rightOptions" @click="swipeClick($event, f.ContainerName)"
 							:disabled='f.Qty==0'>
-							<uni-list-item :title="`箱条码：`+f.ContainerName" :rightText="'计划单号：'+f.MfgOrderName" />
+							<uni-list-item :title="`箱条码：`+f.ContainerName" :note="'计划单号：'+f.MfgOrderName+'\n产品机型：'+f.ProductModel"
+								:rightText="'箱数量：'+f.CurrentCapacity" />
 						</uni-swipe-action-item>
 					</uni-swipe-action>
 				</uni-list>
 
 			</scroll-view>
 			<template v-slot:right>
-				<up-button class="custom-style" type="primary" :disabled="boxList.length==0" text="送检提交"
-					@click="onSubmit"></up-button></template>
+				<view style="display: flex;align-items: center;">
+					送检总数：<text style="color: red;font-weight: bold;margin-right: 10px;">{{allCount}}</text>
+					<up-button class="custom-style" type="primary" :disabled="boxList.length==0" text="送检提交"
+						@click="onSubmit"></up-button>
+				</view>
+			</template>
+
 			<!-- <view class="button-box">
 
 				<up-button class="custom-style" type="primary" :disabled="boxList.length==0" text="送检提交" @click="onSubmit"></up-button>
@@ -71,7 +77,8 @@
 		onReady
 	} from "@dcloudio/uni-app"
 	import {
-		ref
+		ref,
+		computed
 	} from "vue"
 	import useUserStore from '@/stores/user.js'
 	import {
@@ -97,7 +104,8 @@
 	const secthe = ref(0)
 	const boxForm = ref({
 		ContainerName: "",
-		Capacity: "",
+		CurrentCapacity: "",
+		ProductModel:"",
 		Quantity: "",
 		Date: "",
 		Inspector: name.value
@@ -113,6 +121,10 @@
 		}
 	}])
 
+	const allCount = computed(() => {
+		return boxList.value.reduce((sum, e) => sum + Number(e.CurrentCapacity || 0), 0)
+	})
+
 	const getFocus = () => {
 		barCodeFocus.value = false
 		setTimeout(() => {
@@ -123,6 +135,7 @@
 	const focus = () => {
 		uni.hideKeyboard()
 	}
+
 	onReady(() => {
 		uni.createSelectorQuery().select('.sect1').boundingClientRect(data => {
 			secthe.value = (uni.getSystemInfoSync().windowHeight - Math.round(data.height + 55)) + 'px'
@@ -152,29 +165,31 @@
 		const isEixt = boxList.value.findIndex(b => b.ContainerName == formData.value.Container)
 		if (isEixt == -1) {
 			ProductInspectDetails(data).then(res => {
-				if(formData.value.MfgOrderName==""){
-					formData.value.MfgOrderName=res.content.MfgOrderName
+				if (formData.value.MfgOrderName == "") {
+					formData.value.MfgOrderName = res.content.MfgOrderName
 				}
 				console.log(res.content);
-				if(res.content.MfgOrderName==formData.value.MfgOrderName){
+				if (res.content.MfgOrderName == formData.value.MfgOrderName) {
 					audioSuccessPlay()
-					formData.value.MfgOrderName=res.content.MfgOrderName
+					formData.value.MfgOrderName = res.content.MfgOrderName
 					boxForm.value.ContainerName = res.content.CarrierName
 					boxForm.value.userAccount = name.value
 					boxForm.value.MfgOrderName = res.content.MfgOrderName
 					boxForm.value.Inspector = name.value
+					boxForm.value.CurrentCapacity = res.content.CurrentCapacity
+					boxForm.value.ProductModel = res.content.ProductModel
 					boxList.value.push({
 						...boxForm.value
 					})
 					boxForm.value = []
-				}else{
+				} else {
 					audiofailPlay()
 					uni.showToast({
 						title: `${res.content.MfgOrderName}计划单号不一致`,
 						icon: 'none',
 					})
 				}
-				
+
 				formData.value.Container = ""
 				getFocus()
 			}).catch(() => {
@@ -209,7 +224,7 @@
 			if (res.success) {
 				// boxFormRef.value.resetFields()
 				boxList.value = []
-				formData.value.MfgOrderName=""
+				formData.value.MfgOrderName = ""
 				audioSuccessPlay()
 				uni.showToast({
 					title: res.msg,
@@ -230,10 +245,11 @@
 		boxForm.value.capacity = ""
 		boxList.value = []
 	}
-	const reset=()=>{
-		boxList.value=[]
-		formData.value.MfgOrderName=""
-		formData.value.Container=""
+	const reset = () => {
+		boxList.value = []
+		formData.value.MfgOrderName = ""
+		formData.value.Container = ""
+
 		getFocus()
 	}
 </script>

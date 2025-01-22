@@ -94,7 +94,7 @@
 		CheckOrder,
 		PackingWarehousing,
 		checkWarehousingcarrier
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		ref,
 		watch,

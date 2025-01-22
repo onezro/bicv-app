@@ -146,7 +146,7 @@
 		UnLoadMaterialQueue,
 		LoadMaterialQueue,
 		// QuerySpecBystation
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		QuerySpecBystation
 	} from '@/api/dip.js'

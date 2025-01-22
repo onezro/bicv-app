@@ -5,7 +5,7 @@ import {
 //物料拆包
 export function MaterialSplit(data) {
     return request({
-        url: `/api/materialcheck/MaterialSplit`,
+        url: `/api/materialsplit/MaterialSplit`,
         method: "post",
 		data
     });
@@ -13,7 +13,7 @@ export function MaterialSplit(data) {
 //拆包明细
 export function MaterialSplitVerify(data) {
     return request({
-        url: `/api/materialcheck/MaterialSplitVerify`,
+        url: `/api/materialsplit/MaterialSplitVerify`,
         method: "post",
 		data
     });
@@ -59,5 +59,25 @@ export function PackingCarrierScreenWarehousing(data) {
     });
 }
 
+export function QueryPackingInfoByBox(data) {
+    return request({
+        url: `/api/packing/QueryPackingInfoByBox?boxBarcode=${data}`,
+        method: "post",
+    });
+}
 
+export function SplitFinishedSNToPacking(data) {
+    return request({
+        url: "/api/packing/SplitFinishedSNToPacking",
+        method: "post",
+		data
+    });
+}
+//一键拆箱
+export function OnekeyFinishedSNToPacking(data) {
+    return request({
+        url: `/api/packing/OnekeyFinishedSNToPacking?boxBarcode=${data}`,
+        method: "post"
+    });
+}
 

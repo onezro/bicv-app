@@ -63,7 +63,7 @@
 	} from '@/api/work.js'
 	import {
 		audioSuccessPlay,
-		audiofailPlay
+		audiofailPlay 
 	} from "@/utils/prompt.js"
 	import {
 		ref
@@ -189,7 +189,7 @@
 				MaterialName: l.MaterialName,
 				Qty: l.Quantity,
 				OperationType: "C",
-				QualitylsGood: "1",
+				QualitylsGood: "2",
 				EmployeeName: name.value
 			};
 		})

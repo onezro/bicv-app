@@ -2,20 +2,23 @@
 	<view class="content">
 		<uni-section title="拆包信息" type="line">
 			<view class="box">
-				<up-form labelPosition="left" :model="formData" ref="form1" labelWidth="120">
-					<up-form-item label="类型" prop="SplitType" borderBottom>
-						<uni-data-checkbox v-model="formData.SplitType" :localdata="localdata" />
+				<up-form labelPosition="left" :model="formData" ref="form1" labelWidth="70">
+					<up-form-item label="类型" prop="SplitType" class='test'>
+						<uni-data-checkbox v-model="formData.SplitType" :localdata="localdata" @change="change"/>
 					</up-form-item>
-					<up-form-item label="物料批次条码" prop="ContainerName" borderBottom>
-						<u-input placeholder="扫描物料批次条码" v-model="formData.ContainerName" :focus="focusQRCode"
+					<up-form-item label="物料批次条码" prop="ContainerName" class='test'>
+						<u-input placeholder="扫描物料批次条码"  style="height: 30px;" @focus="focus" fontSize='13px' v-model="formData.ContainerName" :focus="focusQRCode"
 							@confirm="submit">
 							<template #suffix>
 								<uni-icons type="scan" color="#bdbdbd" @click="iconClickQRCode" size="24"></uni-icons>
 							</template>
 						</u-input>
 					</up-form-item>
-					<up-form-item label="拆分数量" prop="SplitQty" borderBottom>
-						<up-number-box inputWidth="80" :disabled="isQty" v-model="formData.SplitQty"></up-number-box>
+					<up-form-item label="拆分数量" prop="SplitQty" class='test'>
+						<u-input placeholder="拆分数量"  style="height: 30px;" fontSize='13px' v-model="formData.SplitQty"  disabled>
+							
+				</u-input>
+						<!-- <up-number-box inputWidth="80" :disabled="isQty" v-model="formData.SplitQty"></up-number-box> -->
 					</up-form-item>
 				</up-form>
 			</view>
@@ -23,19 +26,22 @@
 		<uni-section title="物料明细" type="line">
 			<view class="box">
 				<up-form labelPosition="left" :model="material" ref="form1">
-					<up-form-item label="物料编码" prop="material.type" labelWidth="80">
+					<up-form-item label="生产计划号" prop="ConsumingOrder" labelWidth="80" class='test'>
+						<text>{{material.ConsumingOrder}}</text>
+					</up-form-item>
+					<up-form-item label="物料编码" prop="MaterialName" labelWidth="80" class='test'>
 						<text>{{material.MaterialName}}</text>
 					</up-form-item>
-					<up-form-item label="物料名称" labelWidth="80" prop="material.barCode">
+					<up-form-item label="物料名称" labelWidth="80" prop="MaterialDesc" class='test'>
 						<text>{{material.MaterialDesc}}</text>
 					</up-form-item>
-					<up-form-item label="制造日期" labelWidth="80" prop="material.splitQt">
+					<up-form-item label="制造日期" labelWidth="80" prop="DueDate" class='test'>
 						<text>{{material.DueDate}}</text>
 					</up-form-item>
-					<up-form-item label="物料批次" labelWidth="80" prop="material.splitQt">
+					<up-form-item label="物料批次" labelWidth="80" prop="VendorLotNumber" class='test'>
 						<text>{{material.VendorLotNumber}}</text>
 					</up-form-item>
-					<up-form-item label="数量" labelWidth="80" prop="material.splitQt">
+					<up-form-item label="数量" labelWidth="80" prop="Qty" class='test'>
 						<text>{{material.Qty}}</text>
 					</up-form-item>
 				</up-form>
@@ -72,30 +78,29 @@
 		name
 	} = storeToRefs(userStore)
 	const formData = ref({
-		SplitType: "1",
+		SplitType: "LCM",
 		ContainerName: "",
 		ProductName: "",
 		ProductDescription: "",
-		SplitQty: 0,
+		SplitQty: "",
 		Remark: "",
-		workstationName: "",
-		userAccount: name,
+		workstationName: "BICV-SCN-0001",
+		userAccount: name.value,
 		txnDate: ""
 	})
-	const localdata = ref([{
-			text: '单件',
-			value: '1'
-		}, {
-			text: '批次',
-			value: '2'
-		},
+	const localdata = ref([
 		{
-			text: '模组',
-			value: '0'
+			text: 'LCM',
+			value: 'LCM'
+		},{
+			text: '单件(客供)',
+			value: '1'
 		}
+		
 	])
 	const material = ref({
 		ContainerName: "",
+		ConsumingOrder:"",
 		Qty: '',
 		MaterialName: "",
 		MaterialDesc: "",
@@ -117,25 +122,35 @@
 		deep: true,
 		immediate: true
 	})
-
+	const change=()=>{
+		getFocus()
+		// restForm()
+	}
 	const getFocus = () => {
 		focusQRCode.value = false
 		setTimeout(() => {
 			focusQRCode.value = true
 		}, 100)
 	}
+	const focus=()=>{
+		uni.hideKeyboard()
+	}
 	const submit = () => {
 		MaterialSplitVerify(formData.value).then(res => {
+			// console.log(res.content[0]);
 			material.value={...res.content[0]}
 			formData.value.SplitQty=res.content[0].Qty
+			formData.value.ProductName=res.content[0].MaterialName
 			isSubmit.value=false
 			if(res.content[0].Qty==0){
 				isSubmit.value=true
 			}
+			getFocus()
 		}).catch(()=>{
 			// console.log();
 			formData.value.ContainerName=""
 			isSubmit.value=true
+				getFocus()
 		})
 	}
 	const iconClickQRCode = () => {
@@ -152,8 +167,9 @@
 	const restForm = () => {
 		formData.value.ContainerName = ''
 		formData.value.SplitQty = ''
-		formData.value.SplitType = '1'
+		formData.value.SplitType = 'LCM'
 		material.value.ContainerName=''
+		material.value.ConsumingOrder=""
 		material.value.DueDate=''
 		material.value.MaterialDesc=''
 		material.value.MaterialName=''
@@ -173,7 +189,11 @@
 				icon: 'none',
 			})
 			isSubmit.value=true
-			console.log(res);
+			formData.value.ContainerName=""
+			formData.value.SplitQty=""
+			getFocus()
+			// restForm()
+			// console.log(res);
 		}).catch(() => {
 			isSubmit.value=false
 			audiofailPlay()
@@ -200,5 +220,27 @@
 			gap: 100rpx;
 			background-color: #fff;
 		}
+	}
+</style>
+<style lang="scss">
+	
+	.test .u-form-item__body__left__content__label {
+		font-size: 13px;
+	}
+
+	.test .u-form-item__body {
+		padding: 5px 0;
+		font-size: 12px;
+	}
+
+	.texta .uni-textarea-textarea {
+		font-size: 13px;
+	}
+	.test1{
+		font-size: 13px;
+	}
+	.test1 .u-form-item__body {
+		padding: 10px 0;
+		font-size: 12px;
 	}
 </style>

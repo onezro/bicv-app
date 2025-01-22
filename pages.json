@@ -25,9 +25,9 @@
 				"navigationBarTitleText": "MES应用",
 				"app-plus": {
 					"titleNView": false
-				},
+				},  
 				"navigationBarBackgroundColor": "rgba(0,0,0,0.3)",
-				"navigationBarTextStyle": "white" //状态栏字体颜色
+				"navigationBarTextStyle": "white" 
 			}
 		},
 		{
@@ -78,7 +78,7 @@
 		{
 			"path": "pages/material/unboxing",
 			"style": {
-				"navigationBarTitleText": "物料拆箱",
+				"navigationBarTitleText": "屏物料拆包",
 				"enablePullDownRefresh": false
 			}
 		},
@@ -340,6 +340,20 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "组装成品入库"
+			}
+		},
+		{
+			"path" : "pages/material/Split/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "物料拆分"
+			}
+		},
+		{
+			"path" : "pages/permanage/scrFinishTurn/index",
+			"style" : 
+			{
+				"navigationBarTitleText" : "屏车间拆箱"
 			}
 		}
 	],

@@ -139,8 +139,8 @@ packages:
       encoding:
         optional: true
 
-  picocolors@1.0.1:
-    resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
+  picocolors@1.1.1:
+    resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
   pinia-plugin-persistedstate@3.2.1:
     resolution: {integrity: sha512-MK++8LRUsGF7r45PjBFES82ISnPzyO6IZx3CH5vyPseFLZCk1g2kgx6l/nW8pEBKxxd4do0P6bJw+mUSZIEZUQ==}
@@ -375,7 +375,7 @@ snapshots:
     dependencies:
       whatwg-url: 5.0.0
 
-  picocolors@1.0.1: {}
+  picocolors@1.1.1: {}
 
   pinia-plugin-persistedstate@3.2.1(pinia@2.1.7(vue@3.4.31)):
     dependencies:
@@ -390,7 +390,7 @@ snapshots:
   postcss@8.4.39:
     dependencies:
       nanoid: 3.3.7
-      picocolors: 1.0.1
+      picocolors: 1.1.1
       source-map-js: 1.2.0
 
   psl@1.9.0: {}

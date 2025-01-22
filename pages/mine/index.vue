@@ -27,7 +27,7 @@
 
 					</view>
 					<view class="item" style="font-size: 28rpx;color: #a2a2a2;">
-						<text>版本号</text>
+						<text>版本</text>
 						<text>{{version_number}}</text>
 						<text style="padding: 5px;font-size: 28rpx;color:red" v-if="isNewVersion"
 							@click="handleToUpgrade">更新</text>

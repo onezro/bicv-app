@@ -184,7 +184,7 @@
 					Qty: l.Qty,
 					MaterialQueue: l.MaterialQueue,
 					OperationType:"C",
-					QualitylsGood:"2",
+					QualitylsGood:"1 ",
 					EmployeeName: name.value
 				};
 			})

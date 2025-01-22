@@ -13,7 +13,7 @@
 <script setup>
 	import {
 		QuerySpecStation
-	} from '@/api/index.js'
+	} from '@/api/smt.js'
 	import {
 		ref,
 		onMounted
